@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Quiz Application</title>
+    <title>Interactive Cisco Quiz & Assessment Tool</title>
     <style>
         :root {
             --bg-color: #f4f6f9;
             --card-bg: #ffffff;
             --text-primary: #1e293b;
             --text-secondary: #64748b;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
             --success: #10b981;
             --success-bg: #d1fae5;
             --success-border: #34d399;
             --error: #ef4444;
             --error-bg: #fee2e2;
             --error-border: #f87171;
-            --border-color: #e2e8f0;
+            --border-color: #cbd5e1;
             --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --radius: 12px;
         }
@@ -43,7 +43,7 @@
         .quiz-container {
             background: var(--card-bg);
             width: 100%;
-            max-width: 700px;
+            max-width: 800px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             padding: 32px;
@@ -62,16 +62,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: var(--text-secondary);
         }
 
         .progress-bar-background {
             width: 100%;
-            height: 8px;
+            height: 10px;
             background-color: var(--border-color);
-            border-radius: 4px;
+            border-radius: 5px;
             overflow: hidden;
         }
 
@@ -82,14 +82,27 @@
             transition: width 0.3s ease;
         }
 
+        .question-type-badge {
+            display: inline-block;
+            align-self: flex-start;
+            background-color: #e0e7ff;
+            color: #4338ca;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
         .question-text {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 600;
             line-height: 1.5;
             color: var(--text-primary);
             white-space: pre-wrap;
         }
 
+        /* Options Styles */
         .options-container {
             display: flex;
             flex-direction: column;
@@ -106,10 +119,6 @@
             text-align: left;
             cursor: pointer;
             transition: all 0.2s ease;
-            outline: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             width: 100%;
             white-space: pre-wrap;
             word-break: break-word;
@@ -120,9 +129,9 @@
             background-color: #f8fafc;
         }
 
-        .option-btn:focus-visible {
+        .option-btn.selected-option {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            background-color: #eff6ff;
         }
 
         .option-btn:disabled {
@@ -143,13 +152,101 @@
             font-weight: 600;
         }
 
+        /* Drag and Drop Styles */
+        .dnd-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .dnd-source-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 16px;
+            background-color: #f1f5f9;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            min-height: 60px;
+        }
+
+        .drag-item {
+            background-color: #ffffff;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .drag-item.dragging {
+            opacity: 0.4;
+        }
+
+        .dnd-targets-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dnd-target-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .dnd-prompt {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .dnd-dropzone {
+            min-height: 44px;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            background-color: #fafafa;
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            transition: background-color 0.2s;
+        }
+
+        .dnd-dropzone.hovered {
+            background-color: #e0e7ff;
+            border-color: var(--primary);
+        }
+
+        .dnd-dropzone.correct {
+            background-color: var(--success-bg);
+            border-color: var(--success-border);
+        }
+
+        .dnd-dropzone.wrong {
+            background-color: var(--error-bg);
+            border-color: var(--error-border);
+        }
+
+        .dnd-feedback {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
         .quiz-footer {
             display: flex;
             justify-content: flex-end;
             margin-top: 8px;
         }
 
-        .next-btn, .btn-primary {
+        .btn-primary {
             background-color: var(--primary);
             color: white;
             border: none;
@@ -161,8 +258,13 @@
             transition: background-color 0.2s ease;
         }
 
-        .next-btn:hover, .btn-primary:hover {
+        .btn-primary:hover {
             background-color: var(--primary-hover);
+        }
+
+        .btn-primary:disabled {
+            background-color: var(--border-color);
+            cursor: not-allowed;
         }
 
         .results-container {
@@ -189,13 +291,6 @@
             color: var(--text-secondary);
         }
 
-        .missed-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-        }
-
         .missed-list {
             display: flex;
             flex-direction: column;
@@ -213,38 +308,13 @@
             font-size: 0.95rem;
         }
 
-        .missed-item .m-question {
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .missed-item .m-user {
-            color: var(--error);
-            margin-bottom: 2px;
-        }
-
-        .missed-item .m-correct {
-            color: #059669;
-            font-weight: 600;
-        }
-
-        .restart-btn {
-            align-self: center;
-            width: 100%;
-            margin-top: 12px;
-        }
-
         .hidden {
             display: none !important;
         }
 
         @media (max-width: 600px) {
-            .quiz-container {
-                padding: 20px;
-            }
-            .question-text {
-                font-size: 1.1rem;
-            }
+            .quiz-container { padding: 20px; }
+            .question-text { font-size: 1rem; }
         }
     </style>
 </head>
@@ -255,24 +325,30 @@
         <div id="quiz-screen">
             <div class="quiz-header">
                 <div class="progress-info">
-                    <span id="question-progress">Question 1 of 12</span>
+                    <span id="question-progress">Question 1 of 0</span>
                     <span id="score-counter">Score: 0</span>
                 </div>
                 <div class="progress-bar-background">
                     <div id="progress-fill" class="progress-bar-fill"></div>
                 </div>
+                <span id="question-type-badge" class="question-type-badge">Multiple Choice</span>
             </div>
 
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 16px;">
                 <h2 id="question-text" class="question-text"></h2>
             </div>
 
-            <div id="options-container" class="options-container" style="margin-top: 20px;">
-                <!-- Buttons generated dynamically -->
+            <!-- Multiple Choice Container -->
+            <div id="options-container" class="options-container" style="margin-top: 20px;"></div>
+
+            <!-- Drag and Drop Container -->
+            <div id="dnd-container" class="dnd-container hidden" style="margin-top: 20px;">
+                <div class="dnd-source-pool" id="dnd-source-pool"></div>
+                <div class="dnd-targets-list" id="dnd-targets-list"></div>
             </div>
 
             <div class="quiz-footer">
-                <button id="next-btn" class="next-btn hidden">Next Question</button>
+                <button id="action-btn" class="btn-primary hidden">Submit Answer</button>
             </div>
         </div>
 
@@ -285,186 +361,950 @@
             </div>
 
             <div id="missed-section">
-                <h3 class="missed-title">Review Missed Questions</h3>
-                <div id="missed-list" class="missed-list">
-                    <!-- Missed questions dynamically inserted -->
-                </div>
+                <h3 style="margin-bottom: 12px;">Review Missed Questions</h3>
+                <div id="missed-list" class="missed-list"></div>
             </div>
 
-            <button id="restart-btn" class="btn-primary restart-btn">Restart Quiz</button>
+            <button id="restart-btn" class="btn-primary" style="align-self: center; width: 100%;">Restart Quiz</button>
         </div>
     </div>
 
     <script>
-        // Inline Embedded Question & Answer Data
-        const rawQuizData = [
+        // Data set loaded directly from A&Q2.txt (with cleaned markers) and Drag & Drop sheets
+        const quizData = [
             {
-                question: "1.DRAG DROP\nRefer to the exhibit.\ninterface FastEthernet 0/1\nMatch the command elements:",
+                type: "mc",
+                question: "What is the purpose of the chassis in a blade server environment?",
                 options: [
-                    "component to configure -> interface",
-                    "interface type -> FastEthernet",
-                    "port -> 1",
-                    "Slot -> 0"
+                    "A. To provide additional processing power",
+                    "B. To act as a storage array for the Servers",
+                    "C. To replace the need for network switches",
+                    "D. To house multiple servers"
                 ],
-                answerIndex: 0
+                correctIndices: [3]
             },
             {
-                question: "2. DRAG DROP\nMatch the virtualized data center component:",
+                type: "mc",
+                question: "Which two actions are typically performed in ROMMON mode during the Password recoveryprocess? (Choose two.)",
                 options: [
-                    "virtual machine (VM) -> emulation of a computer system operating with its own physical hardware",
-                    "virtual switch -> emulates a Layer 2 switch and provides network connectivity",
-                    "Type 1 Hypervisor -> runs directly on physical server hardware for large-scale deployments",
-                    "Type 2 Hypervisor -> runs as a software layer on a host OS for development/testing"
+                    "A. Change the configuration register.",
+                    "B. Load the startup configuration.",
+                    "C. Save the configuration.",
+                    "D. Modify passwords.",
+                    "E. Reboot the device."
                 ],
-                answerIndex: 0
+                correctIndices: [1, 3]
             },
             {
-                question: "3. DRAG DROP\nMatch the network connectivity and management tools:",
+                type: "mc",
+                question: "What is the primary purpose of changing the configuration register when performing password recovery?",
                 options: [
-                    "PING -> sends ICMP echo request packets to verify connectivity",
-                    "Telnet -> allows virtual terminal connections with unencrypted traffic",
-                    "SSH -> provides secure, encrypted remote access to network devices",
-                    "IP address configuration -> requires PC and Cisco device in same subnet"
+                    "A. To erase the entire configuration",
+                    "B. To ignore the startup configuration",
+                    "C. To unlock all user accounts",
+                    "D. To enable advanced debugging features"
                 ],
-                answerIndex: 0
+                correctIndices: [1]
             },
             {
-                question: "4. DRAG DROP\nSelect the correct order of steps to capture the status of a Cisco device:",
+                type: "mc",
+                question: "Which command is used to determine if there is sufficient space in the memory of a device before installing a new Cisco IOS image?",
                 options: [
-                    "Step 1: Connect to console port -> Step 2: Access CLI -> Step 3: Create capture file -> Step 4: Check status -> Step 5: Save output",
-                    "Step 1: Access CLI -> Step 2: Connect to console port -> Step 3: Check status -> Step 4: Save output",
-                    "Step 1: Create capture file -> Step 2: Connect to console port -> Step 3: Save output -> Step 4: Access CLI",
-                    "Step 1: Connect to console port -> Step 2: Check status -> Step 3: Access CLI -> Step 4: Save output"
+                    "A. show file-system",
+                    "B. show storage",
+                    "C. show memory",
+                    "D. show flash:"
                 ],
-                answerIndex: 0
+                correctIndices: [3]
             },
             {
-                question: "5. DRAG DROP\nMatch MDS switch characteristics to Director-Class:",
+                type: "mc",
+                question: "What happens to the switch operation when a supervisor module in a Cisco Nexus switch is replaced by two supervisor modules?",
                 options: [
-                    "enterprise-class performance, scalable design, high port densities",
-                    "fixed number of ports, ideal for Edge SAN deployments",
-                    "suitable for small deployments with limited port expansion",
-                    "unmanaged simple layer 2 switches"
+                    "A. The switch continues to operate without any interruption.",
+                    "B. All modules in the switch are reset due to a stateless switchover",
+                    "C. Only the affected line cards reset.",
+                    "D. The switch shuts down completely."
                 ],
-                answerIndex: 0
+                correctIndices: [1]
             },
             {
-                question: "6. DRAG DROP\nSelect the correct safety sequence prior to working with electrical equipment:",
+                type: "mc",
+                question: "Which component serves as the central management and communication core and provides a single point of management via Cisco UCS Manager in a Cisco UCS environment?",
                 options: [
-                    "Step 1: Locate emergency power-off -> Step 2: Disconnect power -> Step 3: Verify with multimeter -> Step 4: Connect ESD strap",
-                    "Step 1: Disconnect power -> Step 2: Connect ESD strap -> Step 3: Verify with multimeter -> Step 4: Locate power-off",
-                    "Step 1: Connect ESD strap -> Step 2: Disconnect power -> Step 3: Verify with multimeter -> Step 4: Locate power-off",
-                    "Step 1: Verify with multimeter -> Step 2: Disconnect power -> Step 3: Connect ESD strap -> Step 4: Locate power-off"
+                    "A. Nexus 9000 Series Switch",
+                    "B. UCS E-Series server in ISR platforms",
+                    "C. MDS 9000 Series SAN Switch",
+                    "D. UCS Fabric Interconnect"
                 ],
-                answerIndex: 0
+                correctIndices: [3]
             },
             {
-                question: "7. DRAG DROP\nWhich field-replaceable unit is responsible for 'inability to manage or control switch functions'?",
+                type: "mc",
+                question: "What are the steps to mount a Cisco device in a rack?",
                 options: [
-                    "supervisor module",
-                    "fan module",
-                    "line card",
-                    "fabric module"
+                    "A. Mount in rack. Install mounting brackets. Ground the device.",
+                    "B. Install mounting brackets. Mount in rack. Ground the device.",
+                    "C. Ground the device. Install mounting brackets.",
+                    "D. Install mounting brackets. Ground the device. Mount in rack."
                 ],
-                answerIndex: 0
+                correctIndices: [1]
             },
             {
-                question: "8. DRAG DROP\nWhich IPv4 addressing mode is used for testing and troubleshooting on the local device?",
+                type: "mc",
+                question: "What must be verified before installing or replacing DIMMs in a Cisco UCS server?",
                 options: [
-                    "loopback",
-                    "broadcast",
-                    "unicast",
-                    "multicast"
+                    "A. Compatibility of the DIMM with the current firmware version of the server",
+                    "B. Current DIMM configuration and population order",
+                    "C. Exact type, speed, and capacity of the DIMM",
+                    "D. Maximum supported DIMM capacity for the server model"
                 ],
-                answerIndex: 0
+                correctIndices: [1]
             },
             {
-                question: "9. DRAG DROP\nMatch Cisco collaboration endpoints: 'all-in-one devices for personal workspaces and meeting Rooms'",
+                type: "mc",
+                question: "What must be considered when installing a new fan module in a fixed-configuration Cisco Nexus switch?",
                 options: [
-                    "Cisco Room Kit",
-                    "Cisco Board",
-                    "Cisco Desk Series",
-                    "Quad Camera"
+                    "A. The size of the fan module must match the power supply.",
+                    "B. Fan modules can be installed only when the switch is powered off",
+                    "C. The airflow direction must be consistent with other installed modules.",
+                    "D. The fan module must be from the same manufacturing batch as the others"
                 ],
-                answerIndex: 0
+                correctIndices: [2]
             },
             {
-                question: "10. DRAG DROP\nWhich of the following is considered an Advantage of TFTP?",
+                type: "mc",
+                question: "Which component of the Cisco Room system requires removal of the upper textile grille and the use of release levers during its replacement process?",
                 options: [
-                    "simple setup and operation, transferring small files without security concerns",
-                    "lack of security features and user authentication",
-                    "built-in strong encryption and user access control",
-                    "high performance optimization for large multi-gigabyte file transfers"
+                    "A. Loudspeaker",
+                    "B. Quad camera",
+                    "C. Codec",
+                    "D. Antenna module"
                 ],
-                answerIndex: 0
+                correctIndices: [1]
             },
             {
-                question: "11. DRAG DROP\nWhere is the running configuration stored on a Cisco device?",
+                type: "mc",
+                question: "Which Cisco collaboration component is an enterprise-grade, cloud-based PBX system that enables devices to register to the cloud?",
                 options: [
-                    "RAM",
-                    "NVRAM",
-                    "ROM",
-                    "Flash memory"
+                    "A. Cisco Webex Calling",
+                    "B. Cisco Hosted Collaboration Solutions",
+                    "C. Cisco Webex Meetings",
+                    "D. Cisco Webex Teams"
                 ],
-                answerIndex: 0
+                correctIndices: [0]
             },
             {
-                question: "12. DRAG DROP\nWhich layer of the TCP/IP process groups transport data into packets and adds a network header?",
+                type: "mc",
+                question: "What is the primary function of a wireless LAN controller in a Cisco Unified Wireless Network solution?",
                 options: [
-                    "internet layer",
-                    "link layer",
-                    "transport layer",
-                    "application layer"
+                    "A. To manage and configure associated access points centrally",
+                    "B. To translate data into a frame format for transmission",
+                    "C. To operate at Layer 3 of the OSI model",
+                    "D. To provide wireless connectivity to LAN devices"
                 ],
-                answerIndex: 0
+                correctIndices: [0]
             },
             {
-                question: "13. DRAG DROP\nWhich Cisco Data Center technology provides link aggregation and redundancy between switches?",
+                type: "mc",
+                question: "Which scenario would result in a speed mismatch when configuring Ethernet devices with different speed settings?",
                 options: [
-                    "virtual port channels (vPCs)",
-                    "Unified Fabric",
-                    "Application Centric Infrastructure (ACI)",
-                    "Fibre Channel over Ethernet (FCoE)"
+                    "A. One end is manually set to 1 Gbps, and the other end is manually set to 100 Mbps",
+                    "B. Both ends are manually set to the same speed",
+                    "C. One end is manually set to 100 Mbps, and the other end is set to auto-negotiation",
+                    "D. Both ends are set to auto-negotiation and fail, reverting to their lowest speeds"
                 ],
-                answerIndex: 0
+                correctIndices: [0]
             },
             {
-                question: "14. DRAG DROP\nWhat is Step 1 in the boot sequence process of a Cisco device?",
+                type: "mc",
+                question: "Which two configuration parameters are most critical to ensure optimal performance when configuring a network port for a newly installed IP phone in an enterprise environment? (Choose two.)",
                 options: [
-                    "Performs power-on self-test (POST)",
-                    "Loads and runs bootstrap code (firmware)",
-                    "Finds and loads the Cisco IOS Software",
-                    "Finds and loads the configuration"
+                    "A. VLAN assignment",
+                    "B. Link aggregation",
+                    "C. Spanning Tree Protocol",
+                    "D. Power over Ethernet",
+                    "E. QoS classification"
                 ],
-                answerIndex: 0
+                correctIndices: [0, 3]
             },
             {
-                question: "15. DRAG DROP\nWhich Cisco NX-OS component contains the full NX-OS kernel and operating system?",
+                type: "mc",
+                question: "Which two devices are most commonly used in a WAN environment? (Choose two.)",
                 options: [
-                    "System Image",
-                    "Kickstart Image",
-                    "Global configuration command mode",
-                    "EXEC command mode"
+                    "A. Hubs",
+                    "B. Optical fiber converters",
+                    "C. Network interface cards",
+                    "D. Modems",
+                    "E. Wireless access points"
                 ],
-                answerIndex: 0
+                correctIndices: [1, 3]
             },
             {
-                question: "16. DRAG DROP\nWhich Cisco tool is primarily used for copying IOS images to and from a router or switch?",
+                type: "mc",
+                question: "What is a feature of Cisco Meraki switches that simplifies the replacement process?",
                 options: [
-                    "USB thumb drive",
-                    "Flash card Reader",
-                    "RJ-45 Ethernet loopback connector",
-                    "RJ-45 coupler"
+                    "A. Built-in configuration wizard",
+                    "B. Automatic hardware detection",
+                    "C. Offline configuration backup",
+                    "D. Cloud-based management"
                 ],
-                answerIndex: 0
+                correctIndices: [3]
+            },
+            {
+                type: "mc",
+                question: "What is the purpose of the packages.conf file in Install mode on Cisco IOS XE Software supported switches?",
+                options: [
+                    "A. It is used to extract the bin file during the installation process.",
+                    "B. It determines which software packages need to be loaded and in what order during boot up.",
+                    "C. It contains the entire bundled software image in a single file.",
+                    "D. It is a subdirectory in flash memory where individual software packages are stored."
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which deployment scenarios are Cisco 8000 Series routers primarily designed for?",
+                options: [
+                    "A. remote branch offices and retail locations",
+                    "B. service provider and web-scale networks",
+                    "C. small business and home office networks",
+                    "D. campus LAN access and distribution layers"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which two results are achieved by briefly pressing the restore/reset button on a Cisco Meraki switch? (Choose two.)",
+                options: [
+                    "A. The device reboots.",
+                    "B. A full factory restore is performed.",
+                    "C. Cloud management is disabled.",
+                    "D. The management interface is cleared.",
+                    "E. The downloaded configuration is deleted."
+                ],
+                correctIndices: [0, 3]
+            },
+            {
+                type: "mc",
+                question: "Which pod-based deployment model provides the most flexibility and scalability in a modern data center topology?",
+                options: [
+                    "A. Spine-and-Leaf",
+                    "B. End of Row (EoR)",
+                    "C. Top of Rack (ToR)",
+                    "D. Fabric Extender model"
+                ],
+                correctIndices: [0]
+            },
+            {
+                type: "mc",
+                question: "Which CLI show command identifies the serial number on a router?",
+                options: [
+                    "A. show inventory",
+                    "B. show idprom",
+                    "C. show version",
+                    "D. show platform"
+                ],
+                correctIndices: [0]
+            },
+            {
+                type: "mc",
+                question: "What is the primary reason for placing heavier devices toward the bottom of the rack when installing replacement hardware?",
+                options: [
+                    "A. To maintain rack stability",
+                    "B. To simplify device maintenance",
+                    "C. To improve air circulation",
+                    "D. To facilitate easier cable management"
+                ],
+                correctIndices: [0]
+            },
+            {
+                type: "mc",
+                question: "Which command prompt commands provide the most thorough network diagnostic information when troubleshooting connectivity issues between a Windows PC and a Cisco device?",
+                options: [
+                    "A. ipconfig /all ping",
+                    "B. netstat -a",
+                    "C. ping tracert netstat",
+                    "D. nslookup arp -a route print"
+                ],
+                correctIndices: [0]
+            },
+            {
+                type: "mc",
+                question: "Which command is used to download a copied configuration file from a TFTP server to merge it with the running configuration of a replacement Cisco device?",
+                options: [
+                    "A. load tftp: running-config",
+                    "B. copy tftp: startup-config",
+                    "C. copy tftp: running-config",
+                    "D. merge tftp: running-config"
+                ],
+                correctIndices: [2]
+            },
+            {
+                type: "mc",
+                question: "What is the first action that must be taken before removing a standby supervisor module from a Cisco MDS 9700 Series Switch?",
+                options: [
+                    "A. Shut down the entire switch.",
+                    "B. Put the module into out-of-service mode.",
+                    "C. Disconnect all network interface cables.",
+                    "D. Perform a manual failover to the standby supervisor."
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "What is the primary purpose of backing up the endpoint configuration prior to replacing the device?",
+                options: [
+                    "A. To troubleshoot network connectivity issues",
+                    "B. To update the firmware of the device",
+                    "C. To generate a performance report for the old device",
+                    "D. To restore settings on the new device after replacement"
+                ],
+                correctIndices: [3]
+            },
+            {
+                type: "mc",
+                question: "Which common CLI command is used to install Cisco NX-OS Software?",
+                options: [
+                    "A. copy tftp: running-config",
+                    "B. install all",
+                    "C. install kickstart",
+                    "D. boot system"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "What is the purpose of the pre-service checklist in the endpoint replacement process?",
+                options: [
+                    "A. To ensure all necessary tools and personnel are available",
+                    "B. To test the functionality of the existing endpoint",
+                    "C. To verify the current configuration settings of the endpoint",
+                    "D. To gather information about the replacement unit"
+                ],
+                correctIndices: [0]
+            },
+            {
+                type: "mc",
+                question: "Which action must be taken when editing a captured configuration of an old device for reuse in a replacement device?",
+                options: [
+                    "A. Remove all configurations under line vty 0 4.",
+                    "B. Retain all username entries.",
+                    "C. Keep all access-list commands intact.",
+                    "D. Add the enable password cisco command."
+                ],
+                correctIndices: [0]
+            },
+            {
+                type: "mc",
+                question: "What is the purpose of a subnet mask?",
+                options: [
+                    "A. Distinguishes the network and host segments",
+                    "B. Provides encryption for network traffic",
+                    "C. Determines the next-hop router",
+                    "D. Aids in route prioritization"
+                ],
+                correctIndices: [0]
+            },
+            {
+                type: "mc",
+                question: "Refer to the exhibit. Which replaceable components are highlighted on the three different series of Cisco UCS servers?",
+                options: [
+                    "A. storage modules",
+                    "B. GPU sockets",
+                    "C. fan modules",
+                    "D. power supplies"
+                ],
+                correctIndices: [2]
+            },
+            {
+                type: "mc",
+                question: "Why is the midplane-free design of the X9508 Modular Chassis significant in the context of Cisco UCS X-Series compute node replacement?",
+                options: [
+                    "A. It enables hot-swapping of compute nodes without powering down the chassis.",
+                    "B. It enables direct front-to-rear airflow, improving cooling efficiency during node replacement.",
+                    "C. It allows for easier future upgrades to faster connectivity standards.",
+                    "D. It reduces the overall power consumption of the chassis."
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "What is the primary advantage of installing and deploying Cisco UCS E-Series servers in branch office routers?",
+                options: [
+                    "A. To serve as a backup storage system for the main data center",
+                    "B. To enhance the wireless capabilities of the router",
+                    "C. To provide local compute power for edge applications",
+                    "D. To increase the packet forwarding capacity of the router"
+                ],
+                correctIndices: [2]
+            },
+            {
+                type: "mc",
+                question: "How must the power to a system with dual power supplies on a Cisco Nexus switch be connected?",
+                options: [
+                    "A. Connect the primary power supply to the main source and the secondary to a backup generator.",
+                    "B. Connect both power supplies to a power distribution unit with built-in redundancy.",
+                    "C. Connect each power supply to a separate power source.",
+                    "D. Connect both power supplies to a single power source."
+                ],
+                correctIndices: [2]
+            },
+            {
+                type: "mc",
+                question: "Which two network design strategies in Cisco data center solutions improve fault tolerance and high availability? (Choose two.)",
+                options: [
+                    "A. SAN extension over IP networks (FCIP)",
+                    "B. Redundant supervisor engines and fabric modules",
+                    "C. High-density 10/40/100 gigabit Ethernet connectivity",
+                    "D. Virtual port channels for link aggregation",
+                    "E. Access layer switch deployment"
+                ],
+                correctIndices: [1, 3]
+            },
+            {
+                type: "mc",
+                question: "Which step must be performed immediately after disconnecting the network cable when replacing an SFP transceiver module?",
+                options: [
+                    "A. Observe the port status LED.",
+                    "B. Disconnect the SFP latch.",
+                    "C. Reinstall dust plugs in the optical bores.",
+                    "D. Install the replacement SFP module."
+                ],
+                correctIndices: [2]
+            },
+            {
+                type: "mc",
+                question: "Which key sequence is used to enter the boot prompt mode when the Cisco NX-OS Software begins the software boot process?",
+                options: [
+                    "A. Ctrl-X",
+                    "B. Ctrl-C",
+                    "C. Ctrl-Z",
+                    "D. Ctrl-1"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which layer of the OSI model provides error detection and defines how access to the media is controlled?",
+                options: [
+                    "A. Presentation layer",
+                    "B. Physical layer",
+                    "C. Network layer",
+                    "D. Data link layer"
+                ],
+                correctIndices: [3]
+            },
+            {
+                type: "mc",
+                question: "Which two cloud computing services are vendor-managed in an Infrastructure as a Service (IaaS) delivery model? (Choose two.)",
+                options: [
+                    "A. Applications",
+                    "B. Networking",
+                    "C. Storage",
+                    "D. Data",
+                    "E. Operating System"
+                ],
+                correctIndices: [1, 2]
+            },
+            {
+                type: "mc",
+                question: "What is the primary role of a switch in a local area network?",
+                options: [
+                    "A. to route data packets between different networks",
+                    "B. to encrypt data transmissions for security",
+                    "C. to divide the network into separate collision domains",
+                    "D. to provide wireless connectivity to LAN devices"
+                ],
+                correctIndices: [2]
+            },
+            {
+                type: "mc",
+                question: "Which Cisco switch series is designed to handle the combined responsibilities of core and distribution layers in a converged architecture?",
+                options: [
+                    "A. Meraki MS400 Series",
+                    "B. Catalyst 6500 E-Series",
+                    "C. Catalyst 1300 Series",
+                    "D. Catalyst 9000 Series"
+                ],
+                correctIndices: [3]
+            },
+            {
+                type: "mc",
+                question: "Which operating system powers the Cisco Nexus series of switches and is optimized for modern data center deployments?",
+                options: [
+                    "A. IOS",
+                    "B. IOS XE",
+                    "C. IOS XR",
+                    "D. NX-OS"
+                ],
+                correctIndices: [3]
+            },
+            {
+                type: "mc",
+                question: "Which Layer 2 technology extends to access layer devices, allowing individual switch ports to be assigned for network and traffic management in an enterprise network?",
+                options: [
+                    "A. BGP",
+                    "B. VLANs",
+                    "C. OSPF",
+                    "D. MPLS"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which function does the Stack Port 1 serve on a Cisco Meraki switch?",
+                options: [
+                    "A. It provides a dedicated uplink to the Meraki cloud for management.",
+                    "B. It serves as a high-speed interconnect for clustered switches.",
+                    "C. It connects to the Stack Port 2 of the previous switch in a stack configuration.",
+                    "D. It connects to the Stack Port 2 of the next switch in a stack configuration."
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "A technician must quickly identify multiple Cisco switches in a rack without powering them on. Where should the technician look for serial numbers on the device?",
+                options: [
+                    "A. Bottom surface of each switch",
+                    "B. Front panel near the status LEDs",
+                    "C. Rear panel near the power supplies",
+                    "D. Top surface of each switch"
+                ],
+                correctIndices: [2]
+            },
+            {
+                type: "mc",
+                question: "What does OIR stand for in the context of Cisco ASR component replacement?",
+                options: [
+                    "A. Offline Installation and Reboot",
+                    "B. Operational Interface Redundancy",
+                    "C. Optical Interface Routing",
+                    "D. Online Insertion and Removal"
+                ],
+                correctIndices: [3]
+            },
+            {
+                type: "mc",
+                question: "Why is it important to verify the update status after the initial upgrade process when upgrading firmware on a Cisco UCS C-Series server using the Host Upgrade Utility?",
+                options: [
+                    "A. To generate a report for compliance documentation",
+                    "B. To confirm that all intended components were successfully updated",
+                    "C. To ensure compatibility with third-party applications",
+                    "D. To activate the new licenses associated with the firmware"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which management option is best suited for standalone Cisco Secure Firewall deployments?",
+                options: [
+                    "A. Cisco Secure Firewall Management Center",
+                    "B. Cisco Security Manager",
+                    "C. Cisco Defense Orchestrator",
+                    "D. Cisco Secure Firewall Device Manager"
+                ],
+                correctIndices: [3]
+            },
+            {
+                type: "mc",
+                question: "What is the primary advantage of the Cisco Intersight cloud-based approach compared to traditional on-premises management tools?",
+                options: [
+                    "A. It requires less local storage",
+                    "B. It offers better integration with non-Cisco products",
+                    "C. It allows management from anywhere without on-premises software",
+                    "D. It provides faster hardware upgrades"
+                ],
+                correctIndices: [2]
+            },
+            {
+                type: "mc",
+                question: "Which step must be taken to minimize data traffic impact when replacing a fabric interconnect?",
+                options: [
+                    "A. Use the fabric evacuation procedure on the subordinate fabric interconnect",
+                    "B. Disable high availability before replacement.",
+                    "C. Remove all cable connections at once.",
+                    "D. Power down both fabric interconnects simultaneously."
+                ],
+                correctIndices: [0]
+            },
+            {
+                type: "mc",
+                question: "What is the main advantage of using Bundle mode when installing Cisco IOS XE Software on a switch?",
+                options: [
+                    "A. Automatic creation of the packages.conf file",
+                    "B. Simplicity, with no need to manage individual packages",
+                    "C. Ability to install and upgrade packages independently"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which protocol should be analyzed when troubleshooting call quality between IP phones?",
+                options: [
+                    "A. SIP",
+                    "B. SCCP",
+                    "C. H.323",
+                    "D. RTP"
+                ],
+                correctIndices: [3]
+            },
+            {
+                type: "mc",
+                question: "Which command provides a concise look at important switch port characteristics, such as port ID, VLAN, duplex, speed, and media type?",
+                options: [
+                    "A. show cdp neighbors",
+                    "B. show interface status",
+                    "C. show controllers",
+                    "D. show ip interface brief"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Why is a Cisco Nexus switch typically deployed in a network?",
+                options: [
+                    "A. In branch offices for local area networking",
+                    "B. In data centers for high-performance, low latency switching",
+                    "C. As wireless access points in enterprise campuses",
+                    "D. As edge routers connecting to ISPs"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which Cisco UCS management platform is specifically designed for managing standalone Cisco UCS C-Series rack servers and E-Series servers?",
+                options: [
+                    "A. Cisco Integrated Management Controller",
+                    "B. Cisco UCS Central",
+                    "C. Cisco UCS Manager",
+                    "D. Cisco Intersight"
+                ],
+                correctIndices: [0]
+            },
+            {
+                type: "mc",
+                question: "Which command is used to copy the startup configuration of a device to a USB file system when transferring files to a Cisco device?",
+                options: [
+                    "A. Router# copy startup-config tftp://[server_ip]/[destination_file]",
+                    "B. Router# copy startup-config usbflash0:[filename]",
+                    "C. Router# copy usbflash0:[filename] startup-config",
+                    "D. Router# copy running-config usbflash0:[filename]"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which cable type should be used when installing replacement hardware and connecting two devices of the same type, like two DTEs or two DCEs?",
+                options: [
+                    "A. USB Type A to Type B cable",
+                    "B. Rolled RJ-45 to RJ-45 console cable",
+                    "C. RJ-45 Ethernet straight-through patch cable",
+                    "D. RJ-45 Ethernet crossover patch cable"
+                ],
+                correctIndices: [3]
+            },
+            {
+                type: "mc",
+                question: "What is the recommended resistance value range to ensure proper grounding when using an antistatic strap to perform work on electrical components?",
+                options: [
+                    "A. Between 0.1 and 1 megaohms",
+                    "B. Between 1 and 10 megaohms",
+                    "C. Between 10 and 100 megaohms",
+                    "D. Between 100 and 1000 megaohms"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which type of license is locally managed and does not require external tools for management?",
+                options: [
+                    "A. Hybrid licenses",
+                    "B. PAK licenses",
+                    "C. RTU licenses",
+                    "D. Smart licenses"
+                ],
+                correctIndices: [2]
+            },
+            {
+                type: "mc",
+                question: "Which two actions ensure a smooth transition to the new hardware when replacing a Cisco UCS C-Series Rack-Mount Server? (Choose two.)",
+                options: [
+                    "A. Reconfigure the DHCP server to assign a new IP address to the replacement server.",
+                    "B. Back up the server configuration using Cisco Integrated Management Controller.",
+                    "C. Temporarily disable all firewalls during the replacement process.",
+                    "D. Decommission the server if it is integrated in a Cisco UCS domain.",
+                    "E. Update the firmware on the fabric interconnects."
+                ],
+                correctIndices: [1, 3]
+            },
+            {
+                type: "mc",
+                question: "What is the function of an access layer device?",
+                options: [
+                    "A. Provides high-speed data transport between buildings or different parts of the campus",
+                    "B. Serves as the entry point for end-user devices to connect to the network",
+                    "C. Provides secure external access to internal network components",
+                    "D. Connects remote offices to the main corporate network"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which action must be taken before powering down the endpoint during the replacement process of a Cisco collaboration device?",
+                options: [
+                    "A. Reset the device to factory settings.",
+                    "B. Back up the configuration.",
+                    "C. Activate the new device."
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "How many bits are borrowed from the default host portion of the address to create subnets in a Class B network with a subnet mask 255.255.255.0?",
+                options: [
+                    "A. 3 bits",
+                    "B. 5 bits",
+                    "C. 8 bits"
+                ],
+                correctIndices: [2]
+            },
+            {
+                type: "mc",
+                question: "Which two settings are standard Cisco console connections when configuring a terminal emulator to connect to the console port of a Cisco switch? (Choose two.)",
+                options: [
+                    "A. Stop bits: 2",
+                    "B. Flow control: Hardware",
+                    "C. Speed (baud rate): 9600",
+                    "D. Data bits: 8",
+                    "E. Parity: Even"
+                ],
+                correctIndices: [2, 3]
+            },
+            {
+                type: "mc",
+                question: "What are two indicators that a network interface card must be replaced? (Choose two.)",
+                options: [
+                    "A. Connectivity problems",
+                    "B. Inability to save configurations",
+                    "C. Consistent link down status",
+                    "D. Boot failures",
+                    "E. Frequent system crashes"
+                ],
+                correctIndices: [0, 2]
+            },
+            {
+                type: "mc",
+                question: "Which deployment model minimizes dependence on internet connectivity for core collaboration functions?",
+                options: [
+                    "A. Cloud-based deployment",
+                    "B. On-premises deployment",
+                    "C. Software-as-a-Service model",
+                    "D. Hosted Collaboration Solution"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which mode must the console terminal of the device be in before a prewritten configuration is pasted to transfer the configuration from an old device to a new one?",
+                options: [
+                    "A. Interface configuration mode",
+                    "B. Global configuration mode",
+                    "C. Privileged EXEC mode",
+                    "D. User EXEC mode"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which term describes the physical range of radio frequency coverage provided by an access point in a wireless topology?",
+                options: [
+                    "A. Service Set Identifier (SSID)",
+                    "B. Basic Service Area (BSA)",
+                    "C. Wireless LAN (WLAN)",
+                    "D. Wireless LAN Controller (WLC)"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which two features are managed by the hardware and software of the collaboration infrastructure? (Choose two.)",
+                options: [
+                    "A. Network bandwidth allocation",
+                    "B. Hosting large-scale databases",
+                    "C. Facilitating connections",
+                    "D. Supporting meeting experiences",
+                    "E. Phone book administration"
+                ],
+                correctIndices: [2, 3]
+            },
+            {
+                type: "mc",
+                question: "When should a crossover UTP cable be used instead of a straight-through cable when connecting network devices?",
+                options: [
+                    "A. To connect electrically like devices",
+                    "B. To connect a PC to a wireless access point",
+                    "C. To connect a switch to a router",
+                    "D. To connect electrically unlike devices"
+                ],
+                correctIndices: [0]
+            },
+            {
+                type: "mc",
+                question: "Which two components are accessed by removing the chassis cover on Cisco Catalyst 8000 Series Edge platforms? (Choose two.)",
+                options: [
+                    "A. Transceivers",
+                    "B. Network Interface Modules",
+                    "C. DIMMs",
+                    "D. SSDs",
+                    "E. Fan trays"
+                ],
+                correctIndices: [2, 3]
+            },
+            {
+                type: "mc",
+                question: "Which command is used to specify the source for the Cisco IOS software image to load during the boot process?",
+                options: [
+                    "A. boot image",
+                    "B. boot system",
+                    "C. boot ios",
+                    "D. boot source"
+                ],
+                correctIndices: [1]
+            },
+            {
+                type: "mc",
+                question: "Which hardware platform is Cisco Unified Communications Manager typically deployed on?",
+                options: [
+                    "A. Cisco ASR routers",
+                    "B. Cisco Catalyst switches",
+                    "C. Cisco ISR routers",
+                    "D. Cisco UCS C-Series servers"
+                ],
+                correctIndices: [3]
+            },
+            {
+                type: "mc",
+                question: "Which step must be performed immediately after powering off the device when replacing a Cisco chassis?",
+                options: [
+                    "A. Remove the chassis ground.",
+                    "B. Back up the device configuration.",
+                    "C. Remove the chassis.",
+                    "D. Label and remove all I/O cables."
+                ],
+                correctIndices: [3]
+            },
+
+            // Interactive Drag and Drop Exercises retained from 1.DRAG DROP.txt
+            {
+                type: "dnd",
+                question: "Drag and drop the interface configuration mode command structure elements:",
+                pairs: [
+                    { prompt: "component to configure", answer: "interface" },
+                    { prompt: "interface type", answer: "FastEthernet" },
+                    { prompt: "port", answer: "1" },
+                    { prompt: "Slot", answer: "0" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop virtualized data center components to their corresponding descriptions:",
+                pairs: [
+                    { prompt: "Emulation of a computer operating with physical hardware", answer: "virtual machine (VM)" },
+                    { prompt: "Emulates Layer 2 switch and provides network connectivity", answer: "virtual switch" },
+                    { prompt: "Runs directly on hardware for large-scale deployments", answer: "Type 1 Hypervisor" },
+                    { prompt: "Runs as software layer on host OS for dev/testing", answer: "Type 2 Hypervisor" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop network connectivity and management tools to their descriptions:",
+                pairs: [
+                    { prompt: "Sends ICMP echo request packets to verify connectivity", answer: "PING" },
+                    { prompt: "Allows virtual terminal connections with unencrypted traffic", answer: "Telnet" },
+                    { prompt: "Provides secure, encrypted remote access to network devices", answer: "SSH" },
+                    { prompt: "Requires PC and Cisco device to be in same subnet", answer: "IP address configuration" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop steps into order to capture the status of a Cisco device:",
+                pairs: [
+                    { prompt: "Step 1", answer: "Connect to the console port." },
+                    { prompt: "Step 2", answer: "Access the CLI." },
+                    { prompt: "Step 3", answer: "Create a file to capture router status text." },
+                    { prompt: "Step 4", answer: "Check the router status." },
+                    { prompt: "Step 5", answer: "Save the output file." }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop characteristics to Director-Class MDS switches:",
+                pairs: [
+                    { prompt: "Performance Category", answer: "enterprise-class performance" },
+                    { prompt: "Architecture Type", answer: "scalable and expandable design" },
+                    { prompt: "Port Capability", answer: "high port densities" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop safety steps in order for working with electrical equipment:",
+                pairs: [
+                    { prompt: "Step 1", answer: "Locate emergency power-off switch." },
+                    { prompt: "Step 2", answer: "Disconnect power." },
+                    { prompt: "Step 3", answer: "Verify with multimeter." },
+                    { prompt: "Step 4", answer: "Connect ESD strap." }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop hardware failures to the responsible MDS module:",
+                pairs: [
+                    { prompt: "Inability to manage or control switch functions", answer: "supervisor module" },
+                    { prompt: "Failure to maintain optimal temperatures", answer: "fan module" },
+                    { prompt: "Loss of connectivity on specific ports", answer: "line card" },
+                    { prompt: "Inability to establish fiber optic connections", answer: "transceivers" },
+                    { prompt: "Degraded internal data transfer between line cards", answer: "fabric module" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop descriptions to IPv4 addressing modes:",
+                pairs: [
+                    { prompt: "Testing and troubleshooting on local device", answer: "loopback" },
+                    { prompt: "One-to-everyone communication on subnet", answer: "broadcast" },
+                    { prompt: "Identifies unique node on network", answer: "unicast" },
+                    { prompt: "Single packet of one-to-many delivery", answer: "multicast" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop internal memory components to functions:",
+                pairs: [
+                    { prompt: "bootstrap code, POST code, ROM monitor", answer: "ROM" },
+                    { prompt: "startup configuration", answer: "NVRAM" },
+                    { prompt: "running configuration", answer: "RAM" },
+                    { prompt: "Cisco IOS software, backup configuration", answer: "flash memory" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop TCP/IP encapsulation steps to corresponding layer:",
+                pairs: [
+                    { prompt: "Groups data into frames, adding header and FCS Trailer", answer: "link layer" },
+                    { prompt: "Groups transport data into packets, adding network header", answer: "internet layer" },
+                    { prompt: "Groups data into segments and adds header", answer: "transport layer" },
+                    { prompt: "Adds header to user data", answer: "application layer" }
+                ]
             }
         ];
 
-        // State variables
-        let currentQuestionIndex = 0;
+        // State
+        let currentIdx = 0;
         let score = 0;
         let missedQuestions = [];
-        let questionAnswered = false;
+        let selectedIndices = [];
+        let isAnswered = false;
 
         // DOM elements
         const quizScreen = document.getElementById('quiz-screen');
@@ -472,88 +1312,290 @@
         const questionProgress = document.getElementById('question-progress');
         const scoreCounter = document.getElementById('score-counter');
         const progressFill = document.getElementById('progress-fill');
+        const questionTypeBadge = document.getElementById('question-type-badge');
         const questionText = document.getElementById('question-text');
         const optionsContainer = document.getElementById('options-container');
-        const nextBtn = document.getElementById('next-btn');
+        const dndContainer = document.getElementById('dnd-container');
+        const dndSourcePool = document.getElementById('dnd-source-pool');
+        const dndTargetsList = document.getElementById('dnd-targets-list');
+        const actionBtn = document.getElementById('action-btn');
         const scoreDisplay = document.getElementById('score-display');
         const scorePercentage = document.getElementById('score-percentage');
-        const missedSection = document.getElementById('missed-section');
         const missedList = document.getElementById('missed-list');
+        const missedSection = document.getElementById('missed-section');
         const restartBtn = document.getElementById('restart-btn');
 
-        // Initialize App
         function initQuiz() {
-            currentQuestionIndex = 0;
+            currentIdx = 0;
             score = 0;
             missedQuestions = [];
             quizScreen.classList.remove('hidden');
             resultsScreen.classList.add('hidden');
-            renderQuestion();
+            loadQuestion();
         }
 
-        function renderQuestion() {
-            questionAnswered = false;
-            nextBtn.classList.add('hidden');
+        function loadQuestion() {
+            isAnswered = false;
+            selectedIndices = [];
+            actionBtn.classList.add('hidden');
 
-            const currentQ = rawQuizData[currentQuestionIndex];
-            const totalQ = rawQuizData.length;
+            const q = quizData[currentIdx];
+            const total = quizData.length;
 
-            // UI updates
-            questionProgress.textContent = `Question ${currentQuestionIndex + 1} of ${totalQ}`;
+            questionProgress.textContent = `Question ${currentIdx + 1} of ${total}`;
             scoreCounter.textContent = `Score: ${score}`;
-            progressFill.style.width = `${((currentQuestionIndex) / totalQ) * 100}%`;
-            questionText.textContent = currentQ.question;
+            progressFill.style.width = `${(currentIdx / total) * 100}%`;
+            questionText.textContent = q.question;
 
-            // Render options
-            optionsContainer.innerHTML = '';
-            currentQ.options.forEach((optText, index) => {
-                const button = document.createElement('button');
-                button.className = 'option-btn';
-                button.textContent = optText;
-                button.addEventListener('click', () => handleOptionClick(index));
-                optionsContainer.appendChild(button);
-            });
+            if (q.type === 'mc') {
+                const isMulti = q.correctIndices.length > 1;
+                questionTypeBadge.textContent = isMulti ? 'Multiple Select' : 'Multiple Choice';
+                optionsContainer.classList.remove('hidden');
+                dndContainer.classList.add('hidden');
+                renderMC(q, isMulti);
+            } else if (q.type === 'dnd') {
+                questionTypeBadge.textContent = 'Drag and Drop';
+                optionsContainer.classList.add('hidden');
+                dndContainer.classList.remove('hidden');
+                renderDnD(q);
+            }
         }
 
-        function handleOptionClick(selectedIndex) {
-            if (questionAnswered) return;
-            questionAnswered = true;
+        function renderMC(q, isMulti) {
+            optionsContainer.innerHTML = '';
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = optText;
+                btn.onclick = () => handleMCSelection(idx, isMulti, q);
+                optionsContainer.appendChild(btn);
+            });
 
-            const currentQ = rawQuizData[currentQuestionIndex];
-            const buttons = optionsContainer.querySelectorAll('.option-btn');
+            if (isMulti) {
+                actionBtn.textContent = 'Submit Answer';
+                actionBtn.classList.remove('hidden');
+                actionBtn.onclick = () => evaluateMC(q);
+            }
+        }
 
-            // Disable all options
-            buttons.forEach(btn => btn.disabled = true);
+        function handleMCSelection(idx, isMulti, q) {
+            if (isAnswered) return;
 
-            if (selectedIndex === currentQ.answerIndex) {
-                buttons[selectedIndex].classList.add('correct');
-                score++;
-                scoreCounter.textContent = `Score: ${score}`;
+            if (!isMulti) {
+                selectedIndices = [idx];
+                evaluateMC(q);
             } else {
-                buttons[selectedIndex].classList.add('wrong');
-                buttons[currentQ.answerIndex].classList.add('correct');
+                const btn = optionsContainer.children[idx];
+                const foundPos = selectedIndices.indexOf(idx);
+                if (foundPos > -1) {
+                    selectedIndices.splice(foundPos, 1);
+                    btn.classList.remove('selected-option');
+                } else {
+                    selectedIndices.push(idx);
+                    btn.classList.add('selected-option');
+                }
+            }
+        }
+
+        function evaluateMC(q) {
+            if (isAnswered) return;
+            if (selectedIndices.length === 0) return;
+
+            isAnswered = true;
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.disabled = true);
+
+            const sortedUser = [...selectedIndices].sort().join(',');
+            const sortedCorrect = [...q.correctIndices].sort().join(',');
+
+            buttons.forEach((btn, idx) => {
+                btn.classList.remove('selected-option');
+                if (q.correctIndices.includes(idx)) {
+                    btn.classList.add('correct');
+                } else if (selectedIndices.includes(idx)) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            if (sortedUser === sortedCorrect) {
+                score++;
+            } else {
+                const userText = selectedIndices.map(i => q.options[i]).join(' | ');
+                const correctText = q.correctIndices.map(i => q.options[i]).join(' | ');
                 missedQuestions.push({
-                    question: currentQ.question,
-                    userAnswer: currentQ.options[selectedIndex],
-                    correctAnswer: currentQ.options[currentQ.answerIndex]
+                    question: q.question,
+                    userAns: userText || "None selected",
+                    correctAns: correctText
                 });
             }
 
-            if (currentQuestionIndex < rawQuizData.length - 1) {
-                nextBtn.textContent = 'Next Question';
-                nextBtn.classList.remove('hidden');
-            } else {
-                nextBtn.textContent = 'View Results';
-                nextBtn.classList.remove('hidden');
+            scoreCounter.textContent = `Score: ${score}`;
+            setupNextButton();
+        }
+
+        function renderDnD(q) {
+            dndSourcePool.innerHTML = '';
+            dndTargetsList.innerHTML = '';
+
+            const answers = q.pairs.map(p => p.answer);
+            const shuffledAnswers = [...answers].sort(() => Math.random() - 0.5);
+
+            shuffledAnswers.forEach((ansText, index) => {
+                const item = document.createElement('div');
+                item.className = 'drag-item';
+                item.textContent = ansText;
+                item.draggable = true;
+                item.id = `drag-item-${index}`;
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+                dndSourcePool.appendChild(item);
+            });
+
+            q.pairs.forEach((pair, idx) => {
+                const row = document.createElement('div');
+                row.className = 'dnd-target-row';
+
+                const prompt = document.createElement('div');
+                prompt.className = 'dnd-prompt';
+                prompt.textContent = pair.prompt;
+
+                const dropzone = document.createElement('div');
+                dropzone.className = 'dnd-dropzone';
+                dropzone.dataset.targetIdx = idx;
+
+                dropzone.addEventListener('dragover', handleDragOver);
+                dropzone.addEventListener('dragleave', handleDragLeave);
+                dropzone.addEventListener('drop', handleDrop);
+
+                row.appendChild(prompt);
+                row.appendChild(dropzone);
+                dndTargetsList.appendChild(row);
+            });
+
+            dndSourcePool.addEventListener('dragover', handleDragOver);
+            dndSourcePool.addEventListener('dragleave', handleDragLeave);
+            dndSourcePool.addEventListener('drop', handleDropToPool);
+
+            actionBtn.textContent = 'Submit Match';
+            actionBtn.classList.remove('hidden');
+            actionBtn.onclick = evaluateDnD;
+        }
+
+        let draggedElement = null;
+
+        function handleDragStart(e) {
+            if (isAnswered) return;
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', e.target.id);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            if (isAnswered) return;
+            if (e.currentTarget.classList.contains('dnd-dropzone')) {
+                e.currentTarget.classList.add('hovered');
             }
         }
 
-        function handleNextQuestion() {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < rawQuizData.length) {
-                renderQuestion();
+        function handleDragLeave(e) {
+            if (e.currentTarget.classList.contains('dnd-dropzone')) {
+                e.currentTarget.classList.remove('hovered');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            if (isAnswered) return;
+
+            const dropzone = e.currentTarget;
+            dropzone.classList.remove('hovered');
+
+            if (dropzone.children.length > 0) {
+                dndSourcePool.appendChild(dropzone.children[0]);
+            }
+
+            dropzone.appendChild(draggedElement);
+        }
+
+        function handleDropToPool(e) {
+            e.preventDefault();
+            if (isAnswered) return;
+            dndSourcePool.appendChild(draggedElement);
+        }
+
+        function evaluateDnD() {
+            if (isAnswered) return;
+
+            const q = quizData[currentIdx];
+            const dropzones = dndTargetsList.querySelectorAll('.dnd-dropzone');
+            let allCorrect = true;
+            let answeredCount = 0;
+
+            dropzones.forEach((dz, idx) => {
+                const targetPair = q.pairs[idx];
+                const child = dz.children[0];
+
+                if (child) {
+                    answeredCount++;
+                    const userVal = child.textContent;
+                    if (userVal === targetPair.answer) {
+                        dz.classList.add('correct');
+                    } else {
+                        dz.classList.add('wrong');
+                        allCorrect = false;
+                        const fb = document.createElement('div');
+                        fb.className = 'dnd-feedback';
+                        fb.style.color = '#ef4444';
+                        fb.textContent = `Correct: ${targetPair.answer}`;
+                        dz.parentElement.appendChild(fb);
+                    }
+                } else {
+                    allCorrect = false;
+                    dz.classList.add('wrong');
+                    const fb = document.createElement('div');
+                    fb.className = 'dnd-feedback';
+                    fb.style.color = '#ef4444';
+                    fb.textContent = `Missing! Correct: ${targetPair.answer}`;
+                    dz.parentElement.appendChild(fb);
+                }
+            });
+
+            isAnswered = true;
+
+            const dragItems = dndContainer.querySelectorAll('.drag-item');
+            dragItems.forEach(di => di.draggable = false);
+
+            if (allCorrect && answeredCount === q.pairs.length) {
+                score++;
             } else {
-                showResults();
+                missedQuestions.push({
+                    question: q.question,
+                    userAns: "Incorrect or incomplete matching",
+                    correctAns: q.pairs.map(p => `${p.prompt} → ${p.answer}`).join('; ')
+                });
+            }
+
+            scoreCounter.textContent = `Score: ${score}`;
+            setupNextButton();
+        }
+
+        function setupNextButton() {
+            if (currentIdx < quizData.length - 1) {
+                actionBtn.textContent = 'Next Question';
+                actionBtn.classList.remove('hidden');
+                actionBtn.onclick = () => {
+                    currentIdx++;
+                    loadQuestion();
+                };
+            } else {
+                actionBtn.textContent = 'View Results';
+                actionBtn.classList.remove('hidden');
+                actionBtn.onclick = showResults;
             }
         }
 
@@ -561,41 +1603,38 @@
             quizScreen.classList.add('hidden');
             resultsScreen.classList.remove('hidden');
 
-            const totalQ = rawQuizData.length;
-            const percentage = Math.round((score / totalQ) * 100);
+            const total = quizData.length;
+            const pct = Math.round((score / total) * 100);
 
-            scoreDisplay.textContent = `${score} / ${totalQ}`;
-            scorePercentage.textContent = `${percentage}% Correct`;
+            scoreDisplay.textContent = `${score} / ${total}`;
+            scorePercentage.textContent = `${pct}% Correct`;
 
             if (missedQuestions.length === 0) {
                 missedSection.classList.add('hidden');
             } else {
                 missedSection.classList.remove('hidden');
                 missedList.innerHTML = '';
-                missedQuestions.forEach(item => {
-                    const missedItem = document.createElement('div');
-                    missedItem.className = 'missed-item';
-                    missedItem.innerHTML = `
-                        <div class="m-question">${escapeHtml(item.question)}</div>
-                        <div class="m-user">Your answer: ${escapeHtml(item.userAnswer)}</div>
-                        <div class="m-correct">Correct answer: ${escapeHtml(item.correctAnswer)}</div>
+                missedQuestions.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'missed-item';
+                    div.innerHTML = `
+                        <div style="font-weight:600; margin-bottom:4px;">${escapeHtml(m.question)}</div>
+                        <div style="color: var(--error); font-size:0.9rem;">Your Input: ${escapeHtml(m.userAns)}</div>
+                        <div style="color: #059669; font-size:0.9rem; font-weight:600;">Expected: ${escapeHtml(m.correctAns)}</div>
                     `;
-                    missedList.appendChild(missedItem);
+                    missedList.appendChild(div);
                 });
             }
         }
 
-        function escapeHtml(text) {
+        function escapeHtml(str) {
             const div = document.createElement('div');
-            div.textContent = text;
+            div.textContent = str;
             return div.innerHTML;
         }
 
-        // Event Listeners
-        nextBtn.addEventListener('click', handleNextQuestion);
         restartBtn.addEventListener('click', initQuiz);
 
-        // Start Quiz on load
         initQuiz();
     </script>
 </body>
