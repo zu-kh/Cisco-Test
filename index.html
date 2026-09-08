@@ -1,394 +1,602 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cisco Field Technician Interactive Quiz</title>
-  <style>
-    :root {
-      --bg-color: #f4f7f6;
-      --card-bg: #ffffff;
-      --primary: #005073;
-      --primary-hover: #00364d;
-      --text: #2c3e50;
-      --correct: #2ecc71;
-      --incorrect: #e74c3c;
-      --border: #e0e0e0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz Application</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --success-bg: #d1fae5;
+            --success-border: #34d399;
+            --error: #ef4444;
+            --error-bg: #fee2e2;
+            --error-border: #f87171;
+            --border-color: #e2e8f0;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text);
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
-    .quiz-container {
-      background-color: var(--card-bg);
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      width: 100%;
-      max-width: 680px;
-      padding: 30px;
-      box-sizing: border-box;
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-    .quiz-header {
-      margin-bottom: 20px;
-    }
+        .quiz-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 700px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
 
-    .progress-container {
-      width: 100%;
-      background-color: var(--border);
-      height: 10px;
-      border-radius: 5px;
-      overflow: hidden;
-      margin-bottom: 15px;
-    }
+        .quiz-header {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background-color: var(--primary);
-      transition: width 0.3s ease;
-    }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
 
-    .stats {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #7f8c8d;
-    }
+        .progress-bar-background {
+            width: 100%;
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
 
-    .question-text {
-      font-size: 1.15rem;
-      font-weight: 600;
-      line-height: 1.5;
-      margin-bottom: 25px;
-    }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
 
-    .options-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+        }
 
-    .option-btn {
-      background-color: #fff;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 18px;
-      font-size: 1rem;
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      color: var(--text);
-      outline: none;
-    }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-    .option-btn:hover:not([disabled]) {
-      border-color: var(--primary);
-      background-color: #f0f8ff;
-    }
+        .option-btn {
+            background-color: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
 
-    .option-btn.correct {
-      background-color: #e8f8f0 !important;
-      border-color: var(--correct) !important;
-      color: #1e8449;
-      font-weight: bold;
-    }
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background-color: #f8fafc;
+        }
 
-    .option-btn.incorrect {
-      background-color: #fdeaea !important;
-      border-color: var(--incorrect) !important;
-      color: #c0392b;
-    }
+        .option-btn:focus-visible {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
 
-    .footer {
-      margin-top: 30px;
-      display: flex;
-      justify-content: flex-end;
-    }
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
 
-    .next-btn, .restart-btn {
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
+        .option-btn.correct {
+            background-color: var(--success-bg);
+            border-color: var(--success-border);
+            color: #065f46;
+            font-weight: 600;
+        }
 
-    .next-btn:hover, .restart-btn:hover {
-      background-color: var(--primary-hover);
-    }
+        .option-btn.wrong {
+            background-color: var(--error-bg);
+            border-color: var(--error-border);
+            color: #991b1b;
+            font-weight: 600;
+        }
 
-    .next-btn:disabled {
-      background-color: #bdc3c7;
-      cursor: not-allowed;
-    }
+        .quiz-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
 
-    .results-container {
-      text-align: center;
-      padding: 20px 0;
-    }
+        .next-btn, .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
 
-    .results-title {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-    }
+        .next-btn:hover, .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
 
-    .score-display {
-      font-size: 3rem;
-      font-weight: bold;
-      color: var(--primary);
-      margin: 20px 0;
-    }
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
 
-    .hide {
-      display: none;
-    }
-  </style>
+        .results-header {
+            text-align: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 12px 0 4px;
+        }
+
+        .score-percentage {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .missed-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .missed-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .missed-item {
+            background-color: #f8fafc;
+            border-left: 4px solid var(--error);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .missed-item .m-question {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .missed-item .m-user {
+            color: var(--error);
+            margin-bottom: 2px;
+        }
+
+        .missed-item .m-correct {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .restart-btn {
+            align-self: center;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-container {
+                padding: 20px;
+            }
+            .question-text {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="quiz-container">
-  <div id="quiz-screen">
-    <div class="quiz-header">
-      <div class="progress-container">
-        <div class="progress-bar" id="progress-bar"></div>
-      </div>
-      <div class="stats">
-        <span id="question-count">Question 1/97</span>
-        <span id="score-count">Score: 0</span>
-      </div>
+    <div class="quiz-container">
+        <!-- Active Quiz Screen -->
+        <div id="quiz-screen">
+            <div class="quiz-header">
+                <div class="progress-info">
+                    <span id="question-progress">Question 1 of 12</span>
+                    <span id="score-counter">Score: 0</span>
+                </div>
+                <div class="progress-bar-background">
+                    <div id="progress-fill" class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <h2 id="question-text" class="question-text"></h2>
+            </div>
+
+            <div id="options-container" class="options-container" style="margin-top: 20px;">
+                <!-- Buttons generated dynamically -->
+            </div>
+
+            <div class="quiz-footer">
+                <button id="next-btn" class="next-btn hidden">Next Question</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="results-container hidden">
+            <div class="results-header">
+                <h2>Quiz Completed!</h2>
+                <div id="score-display" class="score-display">0 / 0</div>
+                <div id="score-percentage" class="score-percentage">0% Correct</div>
+            </div>
+
+            <div id="missed-section">
+                <h3 class="missed-title">Review Missed Questions</h3>
+                <div id="missed-list" class="missed-list">
+                    <!-- Missed questions dynamically inserted -->
+                </div>
+            </div>
+
+            <button id="restart-btn" class="btn-primary restart-btn">Restart Quiz</button>
+        </div>
     </div>
 
-    <div class="question-text" id="question-text">Loading question...</div>
-    <div class="options-container" id="options-container"></div>
+    <script>
+        // Inline Embedded Question & Answer Data
+        const rawQuizData = [
+            {
+                question: "1.DRAG DROP\nRefer to the exhibit.\ninterface FastEthernet 0/1\nMatch the command elements:",
+                options: [
+                    "component to configure -> interface",
+                    "interface type -> FastEthernet",
+                    "port -> 1",
+                    "Slot -> 0"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "2. DRAG DROP\nMatch the virtualized data center component:",
+                options: [
+                    "virtual machine (VM) -> emulation of a computer system operating with its own physical hardware",
+                    "virtual switch -> emulates a Layer 2 switch and provides network connectivity",
+                    "Type 1 Hypervisor -> runs directly on physical server hardware for large-scale deployments",
+                    "Type 2 Hypervisor -> runs as a software layer on a host OS for development/testing"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "3. DRAG DROP\nMatch the network connectivity and management tools:",
+                options: [
+                    "PING -> sends ICMP echo request packets to verify connectivity",
+                    "Telnet -> allows virtual terminal connections with unencrypted traffic",
+                    "SSH -> provides secure, encrypted remote access to network devices",
+                    "IP address configuration -> requires PC and Cisco device in same subnet"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "4. DRAG DROP\nSelect the correct order of steps to capture the status of a Cisco device:",
+                options: [
+                    "Step 1: Connect to console port -> Step 2: Access CLI -> Step 3: Create capture file -> Step 4: Check status -> Step 5: Save output",
+                    "Step 1: Access CLI -> Step 2: Connect to console port -> Step 3: Check status -> Step 4: Save output",
+                    "Step 1: Create capture file -> Step 2: Connect to console port -> Step 3: Save output -> Step 4: Access CLI",
+                    "Step 1: Connect to console port -> Step 2: Check status -> Step 3: Access CLI -> Step 4: Save output"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "5. DRAG DROP\nMatch MDS switch characteristics to Director-Class:",
+                options: [
+                    "enterprise-class performance, scalable design, high port densities",
+                    "fixed number of ports, ideal for Edge SAN deployments",
+                    "suitable for small deployments with limited port expansion",
+                    "unmanaged simple layer 2 switches"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "6. DRAG DROP\nSelect the correct safety sequence prior to working with electrical equipment:",
+                options: [
+                    "Step 1: Locate emergency power-off -> Step 2: Disconnect power -> Step 3: Verify with multimeter -> Step 4: Connect ESD strap",
+                    "Step 1: Disconnect power -> Step 2: Connect ESD strap -> Step 3: Verify with multimeter -> Step 4: Locate power-off",
+                    "Step 1: Connect ESD strap -> Step 2: Disconnect power -> Step 3: Verify with multimeter -> Step 4: Locate power-off",
+                    "Step 1: Verify with multimeter -> Step 2: Disconnect power -> Step 3: Connect ESD strap -> Step 4: Locate power-off"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "7. DRAG DROP\nWhich field-replaceable unit is responsible for 'inability to manage or control switch functions'?",
+                options: [
+                    "supervisor module",
+                    "fan module",
+                    "line card",
+                    "fabric module"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "8. DRAG DROP\nWhich IPv4 addressing mode is used for testing and troubleshooting on the local device?",
+                options: [
+                    "loopback",
+                    "broadcast",
+                    "unicast",
+                    "multicast"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "9. DRAG DROP\nMatch Cisco collaboration endpoints: 'all-in-one devices for personal workspaces and meeting Rooms'",
+                options: [
+                    "Cisco Room Kit",
+                    "Cisco Board",
+                    "Cisco Desk Series",
+                    "Quad Camera"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "10. DRAG DROP\nWhich of the following is considered an Advantage of TFTP?",
+                options: [
+                    "simple setup and operation, transferring small files without security concerns",
+                    "lack of security features and user authentication",
+                    "built-in strong encryption and user access control",
+                    "high performance optimization for large multi-gigabyte file transfers"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "11. DRAG DROP\nWhere is the running configuration stored on a Cisco device?",
+                options: [
+                    "RAM",
+                    "NVRAM",
+                    "ROM",
+                    "Flash memory"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "12. DRAG DROP\nWhich layer of the TCP/IP process groups transport data into packets and adds a network header?",
+                options: [
+                    "internet layer",
+                    "link layer",
+                    "transport layer",
+                    "application layer"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "13. DRAG DROP\nWhich Cisco Data Center technology provides link aggregation and redundancy between switches?",
+                options: [
+                    "virtual port channels (vPCs)",
+                    "Unified Fabric",
+                    "Application Centric Infrastructure (ACI)",
+                    "Fibre Channel over Ethernet (FCoE)"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "14. DRAG DROP\nWhat is Step 1 in the boot sequence process of a Cisco device?",
+                options: [
+                    "Performs power-on self-test (POST)",
+                    "Loads and runs bootstrap code (firmware)",
+                    "Finds and loads the Cisco IOS Software",
+                    "Finds and loads the configuration"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "15. DRAG DROP\nWhich Cisco NX-OS component contains the full NX-OS kernel and operating system?",
+                options: [
+                    "System Image",
+                    "Kickstart Image",
+                    "Global configuration command mode",
+                    "EXEC command mode"
+                ],
+                answerIndex: 0
+            },
+            {
+                question: "16. DRAG DROP\nWhich Cisco tool is primarily used for copying IOS images to and from a router or switch?",
+                options: [
+                    "USB thumb drive",
+                    "Flash card Reader",
+                    "RJ-45 Ethernet loopback connector",
+                    "RJ-45 coupler"
+                ],
+                answerIndex: 0
+            }
+        ];
 
-    <div class="footer">
-      <button class="next-btn" id="next-btn" disabled>Next Question</button>
-    </div>
-  </div>
+        // State variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let missedQuestions = [];
+        let questionAnswered = false;
 
-  <div id="results-screen" class="results-container hide">
-    <h2 class="results-title">Quiz Completed!</h2>
-    <p>Your Final Score:</p>
-    <div class="score-display" id="final-score">0%</div>
-    <p id="score-details">You got 0 out of 97 questions correct.</p>
-    <button class="restart-btn" id="restart-btn" style="margin-top: 20px;">Restart Quiz</button>
-  </div>
-</div>
+        // DOM elements
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const questionProgress = document.getElementById('question-progress');
+        const scoreCounter = document.getElementById('score-counter');
+        const progressFill = document.getElementById('progress-fill');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const nextBtn = document.getElementById('next-btn');
+        const scoreDisplay = document.getElementById('score-display');
+        const scorePercentage = document.getElementById('score-percentage');
+        const missedSection = document.getElementById('missed-section');
+        const missedList = document.getElementById('missed-list');
+        const restartBtn = document.getElementById('restart-btn');
 
-<script>
-const quizData = [
-  { q: "In Cisco IOS XE install mode, where are the package files stored?", options: ["A. In the system's RAM", "B. In the bootflash or flash memory", "C. On an external USB drive", "D. In NVRAM"], answer: 1 },
-  { q: "Which Cisco device series is specifically designed for branch office deployments?", options: ["A. Cisco ASR routers", "B. Cisco ISR routers", "C. Cisco Nexus switches", "D. Cisco MDS switches"], answer: 1 },
-  { q: "In Cisco UCS, what is the purpose of a VLAN?", options: ["A. To segment network traffic for security and performance", "B. To assign IP addresses to servers", "C. To manage storage resources", "D. To configure server hardware settings"], answer: 0 },
-  { q: "Before replacing a Cisco Catalyst switch, which command should you use to back up its current configuration?", options: ["A. copy running-config startup-config", "B. copy startup-config running-config", "C. copy running-config tftp:", "D. copy tftp: running-config"], answer: 2 },
-  { q: "What is the first step in the password recovery process on a Cisco router?", options: ["A. Reload the router and interrupt the boot sequence", "B. Access the router via SSH", "C. Enter ROMMON mode", "D. Load the startup configuration file"], answer: 0 },
-  { q: "What is a key difference between Cisco IOS XE's Install Mode and Bundle Mode?", options: ["A. Install Mode requires more RAM during boot than Bundle Mode.", "B. Bundle Mode extracts packages during boot, increasing boot time.", "C. Install Mode does not support software sub-package patching.", "D. Bundle Mode is the recommended method by Cisco for IOS XE devices."], answer: 1 },
-  { q: "Where can you typically find the serial number on a Cisco device?", options: ["A. On the front panel", "B. On the back panel", "C. In the device's software", "D. All of the above"], answer: 3 },
-  { q: "When replacing a Cisco UCS B-Series blade server, which component must be checked to ensure compatibility with the existing chassis?", options: ["A. Power supply unit", "B. Fabric interconnect model", "C. Blade firmware version", "D. Chassis midplane revision"], answer: 3 },
-  { q: "In Cisco UCS architecture, where are service profiles primarily used?", options: ["A. To define server hardware configurations", "B. To manage network security policies", "C. To configure storage arrays", "D. To set up user access controls"], answer: 0 },
-  { q: "What is the function of the 'show license' command on a Cisco device?", options: ["A. To display current software licenses installed and status", "B. To show hardware serial number", "C. To list CLI commands", "D. To display running configuration"], answer: 0 },
-  { q: "What is the primary function of the Cisco Integrated Management Controller (CIMC) in UCS C-Series servers?", options: ["A. To manage VLAN configuration", "B. To provide out-of-band management for UCS rack servers", "C. To control access permissions", "D. To optimize virtualization performance"], answer: 1 },
-  { q: "During hardware replacement of a Cisco switch, what step should be performed before removing the device?", options: ["A. Disconnect power supply first", "B. Erase startup configuration", "C. Document cable connections and labeling", "D. Format flash memory"], answer: 2 },
-  { q: "Which tool is commonly used to verify physical connectivity and cable faults in a Cisco deployment?", options: ["A. Cisco DNA Center", "B. Optical Time Domain Reflectometer (OTDR)", "C. Packet Tracer", "D. TDR or cable tester"], answer: 3 },
-  { q: "What is the role of the Fabric Interconnect in a Cisco UCS environment?", options: ["A. Provides compute virtualization", "B. Manages IP addressing for servers", "C. Acts as the central point for server I/O connectivity", "D. Stores service profile templates"], answer: 2 },
-  { q: "Which protocol is used by a Cisco router to download a new IOS image during a software upgrade?", options: ["A. DNS", "B. FTP", "C. SNMP", "D. TFTP"], answer: 3 },
-  { q: "What is the primary advantage of deploying Cisco UCS E-Series servers in branch office routers?", options: ["A. Backup storage for data center", "B. Enhance wireless capabilities", "C. Provide local compute power for edge applications", "D. Increase packet forwarding capacity"], answer: 2 },
-  { q: "Which command is used on a Cisco router to enter global configuration mode?", options: ["A. enable", "B. configure terminal", "C. interface gig0/0", "D. show running-config"], answer: 1 },
-  { q: "What is the primary purpose of a default gateway in a network?", options: ["A. Manage IP address assignments", "B. Secure data using encryption", "C. Route traffic to other networks", "D. Provide DNS resolution"], answer: 2 },
-  { q: "You cannot ping a remote device on the same subnet. What is the FIRST step you should take?", options: ["A. Reboot the router", "B. Check the device's IP configuration", "C. Replace Ethernet cable", "D. Run traceroute"], answer: 1 },
-  { q: "Which of the following is a best practice to secure console access to a Cisco device?", options: ["A. Use default password", "B. Disable console port", "C. Set a strong console password and enable login", "D. Use Telnet instead of SSH"], answer: 2 },
-  { q: "What is the BEST tool to test a physical Ethernet cable for faults in the field?", options: ["A. Laptop", "B. TFTP server", "C. Cable tester", "D. Loopback plug"], answer: 2 },
-  { q: "After reloading a router for password recovery, what action is used to interrupt normal boot?", options: ["A. Start an SSH session", "B. Copy startup config to TFTP", "C. Press the Break key during boot", "D. Enter configure terminal"], answer: 2 },
-  { q: "A blade server loses data path to upstream LAN, but management access works. Which is correct?", options: ["A. UCS Manager failed", "B. FI carries production traffic while UCS Manager is management software on FI that does not forward traffic", "C. Data path cannot actually be down", "D. FI only stores profiles"], answer: 1 },
-  { q: "To bypass startup configuration during password recovery, which register value should be set at ROMMON?", options: ["A. 0x2102", "B. 0x2142", "C. 0x0042", "D. 0x2124"], answer: 1 },
-  { q: "A crushed patch cable under a desk shows no link light. At which OSI layer does this fault occur?", options: ["A. Layer 2, Data Link", "B. Layer 1, Physical", "C. Layer 4, Transport", "D. Layer 3, Network"], answer: 1 },
-  { q: "A technician uses 'boot system flash:' on IOS. How does NX-OS handle boot image configuration differently?", options: ["A. NX-OS manages boot image through install and boot commands", "B. Relies only on verify /md5", "C. Uses identical syntax", "D. Cannot change boot image"], answer: 0 },
-  { q: "An access switch has 3 VLANs and no router attached. How many broadcast domains exist?", options: ["A. Three collision domains, one broadcast domain", "B. Three, because each VLAN is its own broadcast domain", "C. Zero", "D. One"], answer: 1 },
-  { q: "A new ACL in running-config works, but is missing from startup-config. What is the next step?", options: ["A. No action required", "B. Reload router", "C. Run copy running-config startup-config to make it persistent", "D. Re-enter ACL"], answer: 2 },
-  { q: "What does setting the configuration register to 0x2142 cause the router to do on next boot?", options: ["A. Load startup-config normally", "B. Boot while ignoring startup-config in NVRAM", "C. Force load IOS from TFTP", "D. Erase startup-config permanently"], answer: 1 },
-  { q: "In Cisco UCS architecture, what are service profiles primarily used for?", options: ["A. Manage security policies", "B. Configure storage arrays", "C. Set up user controls", "D. Define server hardware configurations"], answer: 3 },
-  { q: "In a modular chassis switch, which component builds forwarding decisions and manages control plane?", options: ["A. Supervisor (route-processor) module", "B. Fan tray", "C. Line card", "D. Uplink module"], answer: 0 },
-  { q: "When an IOS XE device boots using Install mode, which primary file does it read from flash?", options: ["A. packages.conf", "B. cat9k-universalk9.bin", "C. startup-config", "D. vlan.dat"], answer: 0 },
-  { q: "What is the primary function of a Cisco UCS Fabric Interconnect?", options: ["A. Provide redundant backup power", "B. Provide centralized unified management, network, and storage connectivity", "C. Store VM disk images", "D. External firewall"], answer: 1 },
-  { q: "Which memory type retains startup-config across reboots but does not execute live OS code?", options: ["A. DRAM", "B. ROM", "C. NVRAM", "D. Flash Memory"], answer: 2 },
-  { q: "When replacing a hot-swappable PSU, what is the safest initial preparation step?", options: ["A. Power off entire rack breaker", "B. Disconnect power cord from specific PSU and ensure ESD grounding", "C. Remove all linecards", "D. Format flash"], answer: 1 },
-  { q: "During password recovery, after booting with bypass register, which command loads old config into memory?", options: ["A. copy running-config startup-config", "B. copy startup-config running-config", "C. write erase", "D. reload"], answer: 1 },
-  { q: "What is an operational advantage of IOS XE Install mode compared to Bundle mode?", options: ["A. Faster boot times and efficient memory management (pre-extracted packages)", "B. Eliminates flash storage", "C. Prevents register changes", "D. Auto-patches without reload"], answer: 0 },
-  { q: "What is the role of an I/O Module (IOM) / FEX on the rear of a UCS blade chassis?", options: ["A. Standalone Layer 3 gateway", "B. Runs UCS Manager GUI locally", "C. Acts as extension of FI, multiplexing traffic to Fls", "D. Hardware RAID controller"], answer: 2 },
-  { q: "Which component of Cisco memory stores bootstrap program and performs POST?", options: ["A. Flash", "B. DRAM", "C. NVRAM", "D. ROM"], answer: 3 },
-  { q: "When replacing a RAM/DIMM module, what mandatory protective ESD action must be taken?", options: ["A. Attach approved ESD wrist strap to unpainted bare metal on chassis", "B. Wipe pins with moist cloth", "C. Keep router plugged in while swapping", "D. Wrap DIMM in regular plastic bag"], answer: 0 },
-  { q: "Welche genaue Funktion übernimmt die Datei packages.conf beim Start im Install-Modus?", options: ["A. Speichert CLI-Befehle als Backup", "B. Manifest für den Linux-Kernel, welche .pkg-Dateien gemountet werden müssen", "C. Verschlüsseltes ROMMON-Passwort", "D. Monolithisches Binar-Image"], answer: 1 },
-  { q: "Wie ist das Verhältnis zwischen Linux-Kernel und iosd-Prozess im DRAM bei IOS XE?", options: ["A. iosd ist Bare-Metal OS", "B. Linux-Kernel läuft als Basis, iosd als virtualisierter User-Space-Prozess", "C. Ungetrennter Kernel-Speicher", "D. Kernel steuert nur Management"], answer: 1 },
-  { q: "Welcher Befehl expandiert die .bin-Datei im Flash auf einem ISR Router?", options: ["A. install add file bootflash:image.bin activate commit", "B. software expand file", "C. request platform software package expand file bootflash:[image.bin] to bootflash:", "D. boot system package-mode enable"], answer: 2 },
-  { q: "Router bleibt im ROMMON hängen wegen beschädigter packages.conf. Was ermöglicht Notstart?", options: ["A. Manuelles Booten des monolithischen .bin-Images im ROMMON", "B. format bootflash:", "C. Register 0x2142 und no packages check", "D. ROMMON set memory speed high"], answer: 0 },
-  { q: "Wie verhält sich das Dateisystem auf modernen Cisco IOS XE Plattformen im Flash?", options: ["A. Unstrukturierter Block-Speicher", "B. Unterstuetzt strukturierte Verzeichnisse für entpackte .pkg/.conf-Dateien", "C. Alle Dateien müssen im Root liegen", "D. Automatische Verschlüsselung"], answer: 1 },
-  { q: "Welche Auswirkung hat ein falsch oder gar nicht gesetzter BOOT-Umgebungsparameter?", options: ["A. Bootet Fabrikmodus", "B. Schaltet sich ab", "C. Fällt beim Neustart in ROMMON zurück", "D. Kontaktiert TFTP-Server"], answer: 2 },
-  { q: "Was bewirkt der Befehl 'install add file bootflash:image.bin' primär?", options: ["A. Startet System neu", "B. Committet neue Software im NVRAM", "C. Extrahiert und speichert .pkg-Dateien im Bootflash", "D. Löscht alte Pakete"], answer: 2 },
-  { q: "Welcher technische Unterschied besteht zwischen 'install activate' und 'install commit'?", options: ["A. activate lädt temporär mit Rollback-Timer, commit legt dauerhaft fest", "B. activate ändert NVRAM, commit ändert ROM", "C. Keiner", "D. activate nur in Bundle-Mode"], answer: 0 },
-  { q: "Welcher Befehl deckt den vollständigen Ein-Schritt-Prozess (Add, Activate, Commit) ab?", options: ["A. install upgrade immediate file", "B. software package-mode commit", "C. install replace force-commit", "D. install add file bootflash:image.bin activate commit"], answer: 3 },
-  { q: "Was passiert nach Ablauf des Rollback-Timers, wenn 'install commit' vergessen wurde?", options: ["A. Bootet neu aktivierte Software", "B. Automatische Rollback-Ausführung zur vorherigen committeten Version", "C. Bleibt in ROMMON hängen", "D. Löscht Startup-config"], answer: 1 },
-  { q: "Welcher Befehl zeigt die Übersicht aller aktiven, inaktiven oder committeten Pakete?", options: ["A. show version detailed-packages", "B. show flash package-status", "C. show install summary", "D. show iosxe package-state"], answer: 2 },
-  { q: "Welcher Befehl entfernt nicht mehr benötigte inaktive Pakete aus dem Bootflash?", options: ["A. install remove inactive", "B. delete bootflash:*.pkg force", "C. install clean obsolete", "D. squeeze bootflash:"], answer: 0 },
-  { q: "Welcher Befehl leitet einen Rollback zu einer spezifischen Installations-ID ein?", options: ["A. install revert to previous", "B. system downgrade active-package", "C. install restore label <id>", "D. install rollback to id <id>"], answer: 3 },
-  { q: "Welcher Befehl bricht die aktive 'install activate' Operation ab?", options: ["A. reload cancel", "B. install abort", "C. install stop active", "D. software cancel upgrade"], answer: 1 },
-  { q: "Warum benötigt 'install add' deutlich mehr Speicherplatz im Flash als die .bin-Datei?", options: ["A. Entpackte .pkg-Dateien und ursprüngliches .bin verbleiben zeitgleich im Flash", "B. Swap-Datei in DRAM-Größe", "C. Verdopplung der Logs", "D. Speicherplatzbedarf ist identisch"], answer: 0 },
-  { q: "What is the correct sequence and handling technique for ESD protection during supervisor replacement?", options: ["A. ESD strap on painted surface and hold PCB traces", "B. Attach ESD strap to bare metal on chassis and hold card strictly by edges/faceplate", "C. Wear rubber gloves", "D. Touch plastic bezel"], answer: 1 },
-  { q: "What is the critical timeframe warning when operating a switch chassis without a fan tray?", options: ["A. Can run indefinitely below 35°C", "B. Must throttle ports to 10Mbps", "C. Fan trays only affect acoustic noise", "D. Hot-swap within 2 to 5 minutes to prevent thermal shutdown"], answer: 3 },
-  { q: "When inserting a new linecard into an active switch slot, what mechanism ensures proper pin engagement?", options: ["A. Using ejector levers/captive screws in a coordinated manner", "B. Pushing forcefully until LED turns solid amber", "C. Lubricating pins with conductive grease", "D. Booting into ROMMON first"], answer: 0 },
-  { q: "What is the primary reason for leaving dust plugs inside SFP optical transceivers until cabling?", options: ["A. Prevent unauthorized boot", "B. Heat sink", "C. Prevent microscopic dust or skin oils from contaminating optical end-face", "D. Lock laser wavelength"], answer: 2 },
-  { q: "What does a linecard status LED blinking amber (yellow) communicate?", options: ["A. Module experiencing fault, diagnostic testing, or disabled", "B. Operational at maximum rate", "C. Ultra-low power green mode", "D. Requesting firmware rollback"], answer: 0 },
-  { q: "Bending a single-mode fiber patch cord past minimum bend radius causes what effect?", options: ["A. Core liquefaction", "B. Macrobending losses (high optical attenuation / signal loss)", "C. Wavelength conversion", "D. Electrical feedback"], answer: 1 },
-  { q: "During OIR of a redundant Supervisor engine, what state indicates full synchronization?", options: ["A. Standby Disabled / ROMMON active", "B. Standby Booting", "C. Standby Hot (RP and SP fully synchronized for SSO)", "D. Standby Standalone"], answer: 2 },
-  { q: "How does 'Stateless Computing' apply to servers in a Cisco UCS architecture?", options: ["A. Identity decoupled from hardware; blade replaceable via Service Profile", "B. Operates without RAM", "C. Hardware identities permanently burned", "D. Execution strictly via cloud"], answer: 0 },
-  { q: "Which element is NOT contained within or managed by a Cisco UCS Service Profile?", options: ["A. UUID and MAC addresses", "B. vNIC and vHBA policies", "C. Boot order and firmware policies", "D. Physical chassis slot power cable assignment"], answer: 3 },
-  { q: "What does 'Grid' power redundancy mode achieve on a Cisco UCS 5108 blade chassis?", options: ["A. Shuts down fans when power drops", "B. Balances power across two separate AC power sources/feeds", "C. Forces maximum output", "D. Disables redundant PSUs"], answer: 1 },
-  { q: "What is a principal architectural difference between Cisco Intersight and embedded UCS Manager?", options: ["A. Intersight is cloud-operated multi-domain platform; UCSM is local per domain", "B. UCSM manages worldwide via cellular", "C. Intersight replaces physical FI hardware", "D. UCSM requires cloud connection"], answer: 0 },
-  { q: "In Cisco UCS network connectivity, what does 'vNIC uplink pinning' refer to?", options: ["A. Clamping cables to faceplate", "B. Encrypting frames", "C. Associating specific vNIC traffic flow to a designated physical uplink port on the FI", "D. Hard-coding blade slot"], answer: 2 },
-  { q: "Which configurable port personalities can be assigned to unified ports on a Fabric Interconnect?", options: ["A. Console, Aux, USB", "B. Ethernet, Wi-Fi 6, Bluetooth", "C. PoE and telephone", "D. Server ports, Uplink Ethernet, FC/FCoE Storage"], answer: 3 },
-  { q: "How many Fabric Interconnects comprise a standard high-availability Cisco UCS domain?", options: ["A. 1", "B. Redundant cluster of two (Primary and Subordinate)", "C. 4", "D. Arbitrary number 8 to 32"], answer: 1 },
-  { q: "What occurs during initial hardware discovery when a new blade server is inserted into a UCS chassis?", options: ["A. FIs and IOM detect blade via CIMC, inventory hardware, and report to UCS Manager", "B. Formats microcode", "C. Boots factory default Windows", "D. Cuts chassis power"], answer: 0 },
-  { q: "A field technician plugs in a console cable and sees 'Router>'. Which mode is this?", options: ["A. User EXEC Mode; basic monitoring, cannot view running-config or make changes", "B. Privileged EXEC", "C. Global Config", "D. ROMMON"], answer: 0 },
-  { q: "Which command escalates the session prompt from Router> to Router#?", options: ["A. enable", "B. configure terminal", "C. interface gig0/0", "D. show running-config"], answer: 0 },
-  { q: "Which key combination immediately aborts a hung process like a bad DNS lookup in Cisco IOS?", options: ["A. Ctrl + C", "B. Ctrl + Alt + Del", "C. Ctrl + Shift + 6", "D. Esc"], answer: 2 },
-  { q: "What is the most efficient way to use context help to see all commands starting with 'c'?", options: ["A. Type c? without space", "B. Type c ?", "C. Type help c", "D. Press Tab after c"], answer: 0 },
-  { q: "Which keyboard key automatically completes an unambiguous command fragment in Cisco IOS?", options: ["A. Space", "B. Tab", "C. Enter", "D. Shift"], answer: 1 },
-  { q: "While in Global Config, entering an interface command shifts the prompt to which sub-mode?", options: ["A. (config-subif)#", "B. (config-if)#", "C. (config-line)#", "D. (config-router)#"], answer: 1 },
-  { q: "What is the fastest shortcut to exit all sub-modes and return straight to Privileged EXEC (Router#)?", options: ["A. Type exit", "B. Press Ctrl+Z or type end", "C. Ctrl+C", "D. Type quit"], answer: 1 },
-  { q: "Which physical port on the back of a Webex Room Kit codec provides PoE and data to a touch panel?", options: ["A. Dedicated internal PoE switch port", "B. USB-C port", "C. HDMI Input", "D. Serial port"], answer: 0 },
-  { q: "What is the physical button sequence for factory reset on a Webex Desk Pro when touch interface is unresponsive?", options: ["A. Press reset pinhole", "B. Power off, hold Power button while plugging in power until LED blinks red/white", "C. Unplug/replug power 3 times", "D. Hold Mute button"], answer: 1 },
-  { q: "An IP phone fails to power on via Category 6 cable. What is the FIRST physical validation step?", options: ["A. Upgrade firmware", "B. Verify switch port is PoE-capable, enabled, and swap patch cable", "C. Replace switch", "D. Change IP settings"], answer: 1 },
-  { q: "Quad camera video feed is not rendering on room display during installation. Which cable is likely faulty?", options: ["A. Power cable", "B. Primary HDMI input or specialized camera link cable to codec", "C. Serial cable", "D. Network patch cable"], answer: 1 },
-  { q: "After swapping a codec, room display shows 'Unsupported Video Format' (EDID mismatch). How to fix?", options: ["A. Replace HDMI cable", "B. Manually lock HDMI output resolution in web interface/CLI", "C. Reset monitor", "D. Downgrade switch OS"], answer: 1 },
-  { q: "At which layer of the OSI model does switch MAC address forwarding take place?", options: ["A. Layer 1", "B. Layer 2 (Data Link)", "C. Layer 3", "D. Layer 4"], answer: 1 },
-  { q: "What is the correct order of the first four pins (1, 2, 3, 4) in TIA/EIA-568B standard?", options: ["A. Orange-white, Orange, Green-white, Blue", "B. Green-white, Green, Orange-white, Blue", "C. Blue, Blue-white, Orange, Green", "D. Orange, Green, Blue, White"], answer: 0 },
-  { q: "Connecting two legacy switches directly via standard non-MDIX ports requires which cable type?", options: ["A. Rollover", "B. Straight-through", "C. Crossover cable", "D. Coaxial"], answer: 2 },
-  { q: "Replacing a network Hub with a Layer 2 Switch results in what structural change?", options: ["A. All ports share one collision domain", "B. Every port becomes a separate collision domain, microsegmenting traffic", "C. Removes broadcast domains", "D. Eliminates VLANs"], answer: 1 },
-  { q: "Host IP 192.168.10.35 with mask 255.255.255.240 (/28). What are the network and broadcast addresses?", options: ["A. Network: 192.168.10.32, Broadcast: 192.168.10.47", "B. Network: 192.168.10.0, Broadcast: 192.168.10.255", "C. Network: 192.168.10.16, Broadcast: 192.168.10.31", "D. Network: 192.168.10.32, Broadcast: 192.168.10.63"], answer: 0 },
-  { q: "Which Transport Layer protocol guarantees reliable delivery with automatic retransmissions?", options: ["A. UDP", "B. TCP", "C. ICMP", "D. ARP"], answer: 1 },
-  { q: "Which protocol resolves a known Layer 3 IP address to a Layer 2 MAC address via broadcast?", options: ["A. DNS", "B. DHCP", "C. ARP (Address Resolution Protocol)", "D. CDP"], answer: 2 },
-  { q: "What is the safest procedure to replace a failed standby Supervisor in an active Catalyst 9606R?", options: ["A. Power off switch", "B. Verify active supervisor stability, insert new standby supervisor via ejectors, syncs to Standby Hot automatically", "C. Format bootflash", "D. Change register"], answer: 1 },
-  { q: "Installing a 2100W PSU to replace a dead 3200W PSU in a Catalyst 9400 (Combined Mode) causes what?", options: ["A. Normal operation", "B. Supervisor logs mismatch error and disables/excludes input", "C. Permanent shutdown", "D. Automatic conversion to Bundle mode"], answer: 1 },
-  { q: "Correct mechanical sequence to safely remove an SFP module without damage?", options: ["A. Pull transceiver hard with fiber attached", "B. Disconnect fiber optic cable, flip/pull down metal bale clasp latch, slide SFP straight out", "C. Cut cable", "D. Unscrew supervisor"], answer: 1 },
-  { q: "A replacement linecard won't arrive for 48 hours. What action must be taken for the empty slot?", options: ["A. Leave slot open", "B. Install official rigid metal slot blank (filler panel) and secure captive screws", "C. Cover with tape", "D. Shut down chassis"], answer: 1 },
-  { q: "What is the default operational rule regarding insertion/swapping of NIM/SM cards on branch ISR 4331 routers?", options: ["A. Full hot-swapping supported by default", "B. Router should be powered down completely unless module explicitly supports OIR", "C. Format via ROMMON first", "D. Erase startup-config"], answer: 1 },
-  { q: "Which CLI command provides the quickest verification that a newly inserted linecard passed checks?", options: ["A. show running-config", "B. show module (or show platform)", "C. show ip interface brief", "D. show version"], answer: 1 },
-  { q: "A switch port displays 'err-disabled' state after plugging in a cable. Primary cause and fix?", options: ["A. Hardware defect; replace switch", "B. Security feature tripped; fix issue and run 'shutdown' followed by 'no shutdown'", "C. Invalid VLAN; reload image", "D. Cable pinout error"], answer: 1 },
-  { q: "Dual console ports (RJ-45 and Mini-USB) are cabled simultaneously on a router. What happens?", options: ["A. Mini-USB port takes priority and deactivates RJ-45 port", "B. RJ-45 takes priority", "C. Both work simultaneously", "D. Router reboots"], answer: 0 }
-];
+        // Initialize App
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            missedQuestions = [];
+            quizScreen.classList.remove('hidden');
+            resultsScreen.classList.add('hidden');
+            renderQuestion();
+        }
 
-let currentQuestionIndex = 0;
-let score = 0;
-let selectedOption = null;
+        function renderQuestion() {
+            questionAnswered = false;
+            nextBtn.classList.add('hidden');
 
-const questionTextEl = document.getElementById("question-text");
-const optionsContainerEl = document.getElementById("options-container");
-const progressBarEl = document.getElementById("progress-bar");
-const questionCountEl = document.getElementById("question-count");
-const scoreCountEl = document.getElementById("score-count");
-const nextBtn = document.getElementById("next-btn");
-const quizScreenEl = document.getElementById("quiz-screen");
-const resultsScreenEl = document.getElementById("results-screen");
-const finalScoreEl = document.getElementById("final-score");
-const scoreDetailsEl = document.getElementById("score-details");
-const restartBtn = document.getElementById("restart-btn");
+            const currentQ = rawQuizData[currentQuestionIndex];
+            const totalQ = rawQuizData.length;
 
-function loadQuestion() {
-  selectedOption = null;
-  nextBtn.disabled = true;
-  
-  const currentQ = quizData[currentQuestionIndex];
-  questionTextEl.textContent = `${currentQuestionIndex + 1}. ${currentQ.q}`;
-  
-  optionsContainerEl.innerHTML = "";
-  
-  currentQ.options.forEach((opt, index) => {
-    const btn = document.createElement("button");
-    btn.classList.add("option-btn");
-    btn.textContent = opt;
-    btn.addEventListener("click", () => selectOption(index));
-    optionsContainerEl.appendChild(btn);
-  });
+            // UI updates
+            questionProgress.textContent = `Question ${currentQuestionIndex + 1} of ${totalQ}`;
+            scoreCounter.textContent = `Score: ${score}`;
+            progressFill.style.width = `${((currentQuestionIndex) / totalQ) * 100}%`;
+            questionText.textContent = currentQ.question;
 
-  updateProgress();
-}
+            // Render options
+            optionsContainer.innerHTML = '';
+            currentQ.options.forEach((optText, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = optText;
+                button.addEventListener('click', () => handleOptionClick(index));
+                optionsContainer.appendChild(button);
+            });
+        }
 
-function selectOption(index) {
-  if (selectedOption !== null) return; // Prevent changing answer
-  
-  selectedOption = index;
-  const currentQ = quizData[currentQuestionIndex];
-  const buttons = optionsContainerEl.querySelectorAll(".option-btn");
-  
-  buttons.forEach((btn, i) => {
-    btn.disabled = true;
-    if (i === currentQ.answer) {
-      btn.classList.add("correct");
-    }
-    if (i === index && index !== currentQ.answer) {
-      btn.classList.add("incorrect");
-    }
-  });
+        function handleOptionClick(selectedIndex) {
+            if (questionAnswered) return;
+            questionAnswered = true;
 
-  if (index === currentQ.answer) {
-    score++;
-    scoreCountEl.textContent = `Score: ${score}`;
-  }
+            const currentQ = rawQuizData[currentQuestionIndex];
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
 
-  nextBtn.disabled = false;
-}
+            // Disable all options
+            buttons.forEach(btn => btn.disabled = true);
 
-function updateProgress() {
-  const total = quizData.length;
-  const progressPercent = ((currentQuestionIndex) / total) * 100;
-  progressBarEl.style.width = `${progressPercent}%`;
-  questionCountEl.textContent = `Question ${currentQuestionIndex + 1}/${total}`;
-}
+            if (selectedIndex === currentQ.answerIndex) {
+                buttons[selectedIndex].classList.add('correct');
+                score++;
+                scoreCounter.textContent = `Score: ${score}`;
+            } else {
+                buttons[selectedIndex].classList.add('wrong');
+                buttons[currentQ.answerIndex].classList.add('correct');
+                missedQuestions.push({
+                    question: currentQ.question,
+                    userAnswer: currentQ.options[selectedIndex],
+                    correctAnswer: currentQ.options[currentQ.answerIndex]
+                });
+            }
 
-nextBtn.addEventListener("click", () => {
-  currentQuestionIndex++;
-  if (currentQuestionIndex < quizData.length) {
-    loadQuestion();
-  } else {
-    showResults();
-  }
-});
+            if (currentQuestionIndex < rawQuizData.length - 1) {
+                nextBtn.textContent = 'Next Question';
+                nextBtn.classList.remove('hidden');
+            } else {
+                nextBtn.textContent = 'View Results';
+                nextBtn.classList.remove('hidden');
+            }
+        }
 
-function showResults() {
-  quizScreenEl.classList.add("hide");
-  resultsScreenEl.classList.remove("hide");
-  
-  const percentage = Math.round((score / quizData.length) * 100);
-  finalScoreEl.textContent = `${percentage}%`;
-  scoreDetailsEl.textContent = `You answered ${score} out of ${quizData.length} questions correctly.`;
-}
+        function handleNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < rawQuizData.length) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
 
-restartBtn.addEventListener("click", () => {
-  currentQuestionIndex = 0;
-  score = 0;
-  scoreCountEl.textContent = "Score: 0";
-  resultsScreenEl.classList.add("hide");
-  quizScreenEl.classList.remove("hide");
-  loadQuestion();
-});
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
 
-// Initialize Quiz
-loadQuestion();
-</script>
+            const totalQ = rawQuizData.length;
+            const percentage = Math.round((score / totalQ) * 100);
 
+            scoreDisplay.textContent = `${score} / ${totalQ}`;
+            scorePercentage.textContent = `${percentage}% Correct`;
+
+            if (missedQuestions.length === 0) {
+                missedSection.classList.add('hidden');
+            } else {
+                missedSection.classList.remove('hidden');
+                missedList.innerHTML = '';
+                missedQuestions.forEach(item => {
+                    const missedItem = document.createElement('div');
+                    missedItem.className = 'missed-item';
+                    missedItem.innerHTML = `
+                        <div class="m-question">${escapeHtml(item.question)}</div>
+                        <div class="m-user">Your answer: ${escapeHtml(item.userAnswer)}</div>
+                        <div class="m-correct">Correct answer: ${escapeHtml(item.correctAnswer)}</div>
+                    `;
+                    missedList.appendChild(missedItem);
+                });
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Event Listeners
+        nextBtn.addEventListener('click', handleNextQuestion);
+        restartBtn.addEventListener('click', initQuiz);
+
+        // Start Quiz on load
+        initQuiz();
+    </script>
 </body>
 </html>
