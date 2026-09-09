@@ -370,8 +370,7 @@
     </div>
 
     <script>
-        // Data set loaded directly from A&Q2.txt (with cleaned markers) and Drag & Drop sheets
-        const quizData = [
+        const rawQuizData = [
             {
                 type: "mc",
                 question: "What is the purpose of the chassis in a blade server environment?",
@@ -1194,8 +1193,6 @@
                 ],
                 correctIndices: [3]
             },
-
-            // Interactive Drag and Drop Exercises retained from 1.DRAG DROP.txt
             {
                 type: "dnd",
                 question: "Drag and drop the interface configuration mode command structure elements:",
@@ -1299,12 +1296,25 @@
             }
         ];
 
-        // State
+        // Helper shuffle function
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Active State
+        let quizData = [];
         let currentIdx = 0;
         let score = 0;
         let missedQuestions = [];
         let selectedIndices = [];
         let isAnswered = false;
+        let currentShuffledOptions = [];
+        let currentCorrectIndices = [];
 
         // DOM elements
         const quizScreen = document.getElementById('quiz-screen');
@@ -1326,6 +1336,8 @@
         const restartBtn = document.getElementById('restart-btn');
 
         function initQuiz() {
+            // Randomize all questions order on page initialize or restart
+            quizData = shuffleArray(rawQuizData);
             currentIdx = 0;
             score = 0;
             missedQuestions = [];
@@ -1363,7 +1375,22 @@
 
         function renderMC(q, isMulti) {
             optionsContainer.innerHTML = '';
-            q.options.forEach((optText, idx) => {
+
+            // Store original correct option texts
+            const correctOptionTexts = q.correctIndices.map(idx => q.options[idx]);
+
+            // Randomize option order for multiple-choice questions
+            currentShuffledOptions = shuffleArray(q.options);
+
+            // Re-map correct indices according to shuffled order
+            currentCorrectIndices = [];
+            currentShuffledOptions.forEach((optText, newIdx) => {
+                if (correctOptionTexts.includes(optText)) {
+                    currentCorrectIndices.push(newIdx);
+                }
+            });
+
+            currentShuffledOptions.forEach((optText, idx) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.textContent = optText;
@@ -1406,11 +1433,11 @@
             buttons.forEach(b => b.disabled = true);
 
             const sortedUser = [...selectedIndices].sort().join(',');
-            const sortedCorrect = [...q.correctIndices].sort().join(',');
+            const sortedCorrect = [...currentCorrectIndices].sort().join(',');
 
             buttons.forEach((btn, idx) => {
                 btn.classList.remove('selected-option');
-                if (q.correctIndices.includes(idx)) {
+                if (currentCorrectIndices.includes(idx)) {
                     btn.classList.add('correct');
                 } else if (selectedIndices.includes(idx)) {
                     btn.classList.add('wrong');
@@ -1420,8 +1447,8 @@
             if (sortedUser === sortedCorrect) {
                 score++;
             } else {
-                const userText = selectedIndices.map(i => q.options[i]).join(' | ');
-                const correctText = q.correctIndices.map(i => q.options[i]).join(' | ');
+                const userText = selectedIndices.map(i => currentShuffledOptions[i]).join(' | ');
+                const correctText = currentCorrectIndices.map(i => currentShuffledOptions[i]).join(' | ');
                 missedQuestions.push({
                     question: q.question,
                     userAns: userText || "None selected",
@@ -1438,7 +1465,7 @@
             dndTargetsList.innerHTML = '';
 
             const answers = q.pairs.map(p => p.answer);
-            const shuffledAnswers = [...answers].sort(() => Math.random() - 0.5);
+            const shuffledAnswers = shuffleArray(answers);
 
             shuffledAnswers.forEach((ansText, index) => {
                 const item = document.createElement('div');
