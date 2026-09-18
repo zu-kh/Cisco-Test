@@ -1406,17 +1406,30 @@
 					]
 				},
 			    {
-                    type: "dnd",
-                    question: "Drag and drop each characteristic to its corresponding switch category:",
-                    pairs: [
-                        { prompt: "Director-Class (Slot 1)", answer: "enterprise-class performance" },
-                        { prompt: "Director-Class (Slot 2)", answer: "scalable and expandable design" },
-                        { prompt: "Director-Class (Slot 3)", answer: "high port densities" },
-                        { prompt: "Fabric Switches (Slot 1)", answer: "fixed number of ports" },
-                        { prompt: "Fabric Switches (Slot 2)", answer: "ideal for Edge SAN deployments" },
-                        { prompt: "Fabric Switches (Slot 3)", answer: "suitable for small deployments" }
-                   ]
-            },
+    type: "dnd-category",
+    question: "Drag and drop each characteristic to its corresponding switch category:",
+    categories: [
+        {
+            name: "Director-Class",
+            slots: 3,
+            validAnswers: [
+                "enterprise-class performance",
+                "scalable and expandable design",
+                "high port densities"
+            ]
+        },
+        {
+            name: "Fabric Switches",
+            slots: 3,
+            validAnswers: [
+                "fixed number of ports",
+                "ideal for Edge SAN deployments",
+                "suitable for small deployments"
+            ]
+        }
+    ]
+				 }
+			
 			{
                 type: "dnd",
                 question: "Drag and drop hardware failures to the responsible MDS module:",
