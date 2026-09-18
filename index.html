@@ -1903,63 +1903,106 @@
         }
 
         function evaluateDnD() {
-            if (isAnswered) return;
+    if (isAnswered) return;
 
-            const q = quizData[currentIdx];
-            const dropzones = dndTargetsList.querySelectorAll('.dnd-dropzone');
-            let allCorrect = true;
-            let answeredCount = 0;
+    const q = quizData[currentIdx];
+    let allCorrect = true;
+    let answeredCount = 0;
 
-            dropzones.forEach((dz, idx) => {
-                const targetPair = q.pairs[idx];
+    if (q.categories) {
+        // --- CATEGORY-BASED DRAG & DROP EVALUATION ---
+        let totalSlots = 0;
+
+        q.categories.forEach((cat) => {
+            totalSlots += cat.slots || cat.validAnswers.length;
+            const dropzones = dndTargetsList.querySelectorAll(`[data-category="${cat.name}"]`);
+
+            dropzones.forEach((dz) => {
                 const child = dz.children[0];
 
                 if (child) {
                     answeredCount++;
-                    const userVal = child.textContent;
-                    if (userVal === targetPair.answer) {
+                    const userVal = child.textContent.trim();
+
+                    if (cat.validAnswers.includes(userVal)) {
                         dz.classList.add('correct');
                     } else {
                         dz.classList.add('wrong');
                         allCorrect = false;
-                        const fb = document.createElement('div');
-                        fb.className = 'dnd-feedback';
-                        fb.style.color = '#ef4444';
-                        fb.textContent = `Correct: ${targetPair.answer}`;
-                        dz.parentElement.appendChild(fb);
                     }
                 } else {
                     allCorrect = false;
                     dz.classList.add('wrong');
+                }
+            });
+        });
+
+        if (!allCorrect || answeredCount !== totalSlots) {
+            allCorrect = false;
+            missedQuestions.push({
+                question: q.question,
+                userAns: "Incorrect or incomplete matching",
+                correctAns: q.categories.map(c => `${c.name}: [${c.validAnswers.join(', ')}]`).join(' | ')
+            });
+        }
+    } else if (q.pairs) {
+        // --- STANDARD PAIR-BASED DRAG & DROP EVALUATION ---
+        const dropzones = dndTargetsList.querySelectorAll('.dnd-dropzone');
+
+        dropzones.forEach((dz, idx) => {
+            const targetPair = q.pairs[idx];
+            const child = dz.children[0];
+
+            if (child) {
+                answeredCount++;
+                const userVal = child.textContent.trim();
+                if (userVal === targetPair.answer) {
+                    dz.classList.add('correct');
+                } else {
+                    dz.classList.add('wrong');
+                    allCorrect = false;
                     const fb = document.createElement('div');
                     fb.className = 'dnd-feedback';
                     fb.style.color = '#ef4444';
-                    fb.textContent = `Missing! Correct: ${targetPair.answer}`;
+                    fb.textContent = `Correct: ${targetPair.answer}`;
                     dz.parentElement.appendChild(fb);
                 }
-            });
-
-            isAnswered = true;
-            answeredState[currentIdx] = true;
-
-            const dragItems = dndContainer.querySelectorAll('.drag-item');
-            dragItems.forEach(di => di.draggable = false);
-
-            if (allCorrect && answeredCount === q.pairs.length) {
-                score++;
             } else {
-                missedQuestions.push({
-                    question: q.question,
-                    userAns: "Incorrect or incomplete matching",
-                    correctAns: q.pairs.map(p => `${p.prompt} → ${p.answer}`).join('; ')
-                });
+                allCorrect = false;
+                dz.classList.add('wrong');
+                const fb = document.createElement('div');
+                fb.className = 'dnd-feedback';
+                fb.style.color = '#ef4444';
+                fb.textContent = `Missing! Correct: ${targetPair.answer}`;
+                dz.parentElement.appendChild(fb);
             }
+        });
 
-            scoreCounter.textContent = `Score: ${score}`;
-            renderSidebar();
-            setupNextButton();
+        if (!allCorrect || answeredCount !== q.pairs.length) {
+            allCorrect = false;
+            missedQuestions.push({
+                question: q.question,
+                userAns: "Incorrect or incomplete matching",
+                correctAns: q.pairs.map(p => `${p.prompt} → ${p.answer}`).join('; ')
+            });
         }
+    }
 
+    if (allCorrect) {
+        score++;
+    }
+
+    isAnswered = true;
+    answeredState[currentIdx] = true;
+
+    const dragItems = dndContainer.querySelectorAll('.drag-item');
+    dragItems.forEach(di => di.draggable = false);
+
+    scoreCounter.textContent = `Score: ${score}`;
+    renderSidebar();
+    setupNextButton();
+		}
+		
         function setupNextButton() {
             if (currentIdx < quizData.length - 1) {
                 actionBtn.textContent = 'Next Question';
