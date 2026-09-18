@@ -690,6 +690,17 @@
                 ],
                 correctIndices: [1]
             },
+			{
+				type: "mc",
+				question: "Which component is highlighted on the Cisco I/O module image?<br><br><img src='S4.png' alt='Cisco I/O Module' style='max-width: 100%; height: auto; border-radius: 8px;' />",
+				options: [
+					"A. captive screw",
+					"B. chassis connections LED",
+					"C. fan module LED",
+					"D. fixed port"
+				],
+				correctIndices: [1]
+			},
             {
                 type: "mc",
                 question: "Which deployment scenarios are Cisco 8000 Series routers primarily designed for?",
@@ -713,6 +724,17 @@
                 ],
                 correctIndices: [0, 3]
             },
+			{
+				type: "mc",
+				question: "What is the redundancy implementation in this Cisco UCS architecture?<br><br><img src='S3.png' alt='Cisco UCS Architecture' style='max-width: 100%; height: auto; border-radius: 8px;' />",
+				options: [
+					"A. Redundancy is achieved through dual fabric interconnects, providing separate paths for FCoE, FC, and LAN traffic.",
+					"B. Redundancy is limited to the uplink connections, with no failover capabilities between the fabric interconnects.",
+					"C. The system uses a single point of connectivity, relying on internal redundancy within each UCS chassis.",
+					"D. Redundancy is implemented at the chassis level only, with chassis 1 acting as a backup for chassis 2."
+				],
+				correctIndices: [0]
+			},
             {
                 type: "mc",
                 question: "Which pod-based deployment model provides the most flexibility and scalability in a modern data center topology?",
@@ -724,6 +746,18 @@
                 ],
                 correctIndices: [0]
             },
+			{
+				type: "mc",
+				question: "What are two ways remote sites or branches connect to the enterprise campus network? (Choose two.)<br><br><img src='S2.png' alt='Network Diagram' style='max-width: 100%; height: auto; border-radius: 8px;' />",
+				options: [
+					"A. Access layer switches",
+					"B. WAN links",
+					"C. IPsec VPN tunnels",
+					"D. Ad hoc Wi-Fi network",
+					"E. LAN core switches"
+				],
+				correctIndices: [1, 2]
+			},
             {
                 type: "mc",
                 question: "Which CLI show command identifies the serial number on a router?",
@@ -1427,12 +1461,32 @@
 			},
 			{
 				type: "dnd",
+				question: "Drag and drop the Cisco NX-OS components from the left onto the corresponding descriptions on the right:",
+				pairs: [
+					{ prompt: "specialized bootloader that Initializes the hardware", answer: "Kickstart Image" },
+					{ prompt: "contains the full NX-OS kernel and operating system", answer: "System Image" },
+					{ prompt: "provides access to the broadest range of commands that affect the device as a whole", answer: "Global configuration command mode" },
+					{ prompt: "allows for displaying device status and configuration information", answer: "EXEC command mode" }
+				]
+			},
+			{
+				type: "dnd",
 				question: "image Drag and drop the names of the field-replaceable units from the left onto the corresponding letters on the image of the Cisco NCS 5500 Series modular router:\n\n<img src='S1.png' alt='Cisco NCS 5500 Series Modular Router' style='max-width: 100%; height: auto; margin-top: 10px; border-radius: 8px;' />",
 				pairs: [
 					{ prompt: "Letter A", answer: "line cards" },
 					{ prompt: "Letter B", answer: "route processor cards" },
 					{ prompt: "Letter C", answer: "transceivers" },
 					{ prompt: "Letter D", answer: "power supplies" }
+				]
+			},
+			{
+				type: "dnd",
+				question: "Drag and drop the configuration tasks for restoring software from the left onto the corresponding commands on the right:",
+				pairs: [
+					{ prompt: "copy usbflash0:backup.cfg running-config", answer: "Restore configuration from USB drive." },
+					{ prompt: "copy running-config startup-config", answer: "Save configuration changes." },
+					{ prompt: "show running-config", answer: "Display current configuration." },
+					{ prompt: "copy tftp: running-config", answer: "Download configuration from TFTP server." }
 				]
 			},
             {
