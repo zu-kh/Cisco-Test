@@ -1450,6 +1450,27 @@
             },
 			{
 				type: "dnd",
+				question: "Drag and drop the steps of the boot sequence process of a Cisco device into order on the right:",
+				pairs: [
+					{ prompt: "Step 1", answer: "Performs power-on self-test (POST)" },
+					{ prompt: "Step 2", answer: "Loads and runs bootstrap code (firmware)" },
+					{ prompt: "Step 3", answer: "Finds and loads the Cisco IOS Software" },
+					{ prompt: "Step 4", answer: "Finds and loads the configuration" },
+					{ prompt: "Step 5", answer: "Runs the configured Cisco IOS Software" }
+				]
+			},
+			{
+				type: "dnd",
+				question: "Drag and drop the functions from the left onto the corresponding Cisco data center technologies on the right:",
+				pairs: [
+					{ prompt: "Unified Fabric", answer: "integrates multiple network layers into a single infrastructure" },
+					{ prompt: "virtual port channels (vPCs)", answer: "provides link aggregation and redundancy between switches" },
+					{ prompt: "Application Centric Infrastructure (ACI)", answer: "enables software-defined networking in data centers" },
+					{ prompt: "Fibre Channel over Ethernet (FCoE)", answer: "combines storage and network traffic on a single network" }
+				]
+			},
+			{
+				type: "dnd",
 				question: "Drag and drop the Cisco collaboration endpoints to their corresponding descriptions:",
 				pairs: [
 					{ prompt: "all-in-one devices for personal workspaces and meeting rooms", answer: "Cisco Room Kit" },
@@ -1481,12 +1502,42 @@
 			},
 			{
 				type: "dnd",
+				question: "Drag and drop the TFTP statements from the left onto the corresponding categories on the right:",
+				pairs: [
+					{ prompt: "Advantages of TFTP - Characteristic 1", answer: "simple setup and operation" },
+					{ prompt: "Advantages of TFTP - Characteristic 2", answer: "transferring small files without security concerns" },
+					{ prompt: "Disadvantages of TFTP - Characteristic 1", answer: "not suitable for transferring large files" },
+					{ prompt: "Disadvantages of TFTP - Characteristic 2", answer: "lack of security features and user authentication" }
+				]
+			},
+			{
+				type: "dnd",
 				question: "Drag and drop the configuration tasks for restoring software from the left onto the corresponding commands on the right:",
 				pairs: [
 					{ prompt: "copy usbflash0:backup.cfg running-config", answer: "Restore configuration from USB drive." },
 					{ prompt: "copy running-config startup-config", answer: "Save configuration changes." },
 					{ prompt: "show running-config", answer: "Display current configuration." },
 					{ prompt: "copy tftp: running-config", answer: "Download configuration from TFTP server." }
+				]
+			},
+			{
+				type: "dnd",
+				question: "Drag and drop the Cisco UCS components from the left onto the corresponding functionalities on the right:",
+				pairs: [
+					{ prompt: "primary point of connectivity for all attached devices", answer: "fabric interconnects" },
+					{ prompt: "network adapters that allow network interface virtualization", answer: "virtual interface cards" },
+					{ prompt: "maintain connectivity by extending ports", answer: "fabric extenders" },
+					{ prompt: "installed In a chassis and provide compute power", answer: "servers" }
+				]
+			},
+			{
+				type: "dnd",
+				question: "Drag and drop the tools from the left onto the corresponding primary functions on the right:",
+				pairs: [
+					{ prompt: "copying IOS images and configuration files to/from a PC/laptop or TFTP server", answer: "flash card Reader" },
+					{ prompt: "copying IOS images to and from a router or switch", answer: "USB thumb drive" },
+					{ prompt: "testing router or switch Ethernet port functionality", answer: "RJ-45 Ethernet loopback connector" },
+					{ prompt: "connecting two RJ-45 cables to extend length", answer: "RJ-45 coupler" }
 				]
 			},
             {
