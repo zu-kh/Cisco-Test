@@ -83,7 +83,7 @@
             border-radius: 8px;
             border: 1px solid transparent;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-primary);
             transition: all 0.2s;
             background: none;
@@ -107,11 +107,14 @@
             padding: 2px 6px;
             border-radius: 4px;
             font-weight: 600;
+            white-space: nowrap;
+            margin-left: 6px;
         }
 
         .status-pending { background-color: #e2e8f0; color: var(--text-secondary); }
         .status-current { background-color: #dbeafe; color: var(--primary); }
-        .status-answered { background-color: #d1fae5; color: #047857; }
+        .status-correct { background-color: #d1fae5; color: #047857; }
+        .status-wrong { background-color: #fee2e2; color: #991b1b; }
 
         /* Mobile Sidebar Toggle */
         .mobile-toggle {
@@ -196,11 +199,10 @@
         }
 
         .question-text {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 600;
             line-height: 1.5;
             color: var(--text-primary);
-            white-space: pre-wrap;
         }
 
         /* Options Styles */
@@ -513,7 +515,7 @@
             },
             {
                 type: "mc",
-                question: "Which two actions are typically performed in ROMMON mode during the Password recoveryprocess? (Choose two.)",
+                question: "Which two actions are typically performed in ROMMON mode during the Password recovery process? (Choose two.)",
                 options: [
                     "A. Change the configuration register.",
                     "B. Load the startup configuration.",
@@ -690,17 +692,17 @@
                 ],
                 correctIndices: [1]
             },
-			{
-				type: "mc",
-				question: "Which component is highlighted on the Cisco I/O module image?<br><br><img src='S4.png' alt='Cisco I/O Module' style='max-width: 100%; height: auto; border-radius: 8px;' />",
-				options: [
-					"A. captive screw",
-					"B. chassis connections LED",
-					"C. fan module LED",
-					"D. fixed port"
-				],
-				correctIndices: [1]
-			},
+            {
+                type: "mc",
+                question: "Which component is highlighted on the Cisco I/O module image?<br><br><img src='S4.png' alt='Cisco I/O Module' style='max-width: 100%; height: auto; border-radius: 8px;' />",
+                options: [
+                    "A. captive screw",
+                    "B. chassis connections LED",
+                    "C. fan module LED",
+                    "D. fixed port"
+                ],
+                correctIndices: [1]
+            },
             {
                 type: "mc",
                 question: "Which deployment scenarios are Cisco 8000 Series routers primarily designed for?",
@@ -724,17 +726,17 @@
                 ],
                 correctIndices: [0, 3]
             },
-			{
-				type: "mc",
-				question: "What is the redundancy implementation in this Cisco UCS architecture?<br><br><img src='S3.png' alt='Cisco UCS Architecture' style='max-width: 100%; height: auto; border-radius: 8px;' />",
-				options: [
-					"A. Redundancy is achieved through dual fabric interconnects, providing separate paths for FCoE, FC, and LAN traffic.",
-					"B. Redundancy is limited to the uplink connections, with no failover capabilities between the fabric interconnects.",
-					"C. The system uses a single point of connectivity, relying on internal redundancy within each UCS chassis.",
-					"D. Redundancy is implemented at the chassis level only, with chassis 1 acting as a backup for chassis 2."
-				],
-				correctIndices: [0]
-			},
+            {
+                type: "mc",
+                question: "What is the redundancy implementation in this Cisco UCS architecture?<br><br><img src='S3.png' alt='Cisco UCS Architecture' style='max-width: 100%; height: auto; border-radius: 8px;' />",
+                options: [
+                    "A. Redundancy is achieved through dual fabric interconnects, providing separate paths for FCoE, FC, and LAN traffic.",
+                    "B. Redundancy is limited to the uplink connections, with no failover capabilities between the fabric interconnects.",
+                    "C. The system uses a single point of connectivity, relying on internal redundancy within each UCS chassis.",
+                    "D. Redundancy is implemented at the chassis level only, with chassis 1 acting as a backup for chassis 2."
+                ],
+                correctIndices: [0]
+            },
             {
                 type: "mc",
                 question: "Which pod-based deployment model provides the most flexibility and scalability in a modern data center topology?",
@@ -746,18 +748,18 @@
                 ],
                 correctIndices: [0]
             },
-			{
-				type: "mc",
-				question: "What are two ways remote sites or branches connect to the enterprise campus network? (Choose two.)<br><br><img src='S2.png' alt='Network Diagram' style='max-width: 100%; height: auto; border-radius: 8px;' />",
-				options: [
-					"A. Access layer switches",
-					"B. WAN links",
-					"C. IPsec VPN tunnels",
-					"D. Ad hoc Wi-Fi network",
-					"E. LAN core switches"
-				],
-				correctIndices: [1, 2]
-			},
+            {
+                type: "mc",
+                question: "What are two ways remote sites or branches connect to the enterprise campus network? (Choose two.)<br><br><img src='S2.png' alt='Network Diagram' style='max-width: 100%; height: auto; border-radius: 8px;' />",
+                options: [
+                    "A. Access layer switches",
+                    "B. WAN links",
+                    "C. IPsec VPN tunnels",
+                    "D. Ad hoc Wi-Fi network",
+                    "E. LAN core switches"
+                ],
+                correctIndices: [1, 2]
+            },
             {
                 type: "mc",
                 question: "Which CLI show command identifies the serial number on a router?",
@@ -1397,15 +1399,31 @@
                     { prompt: "Step 5", answer: "Save the output file." }
                 ]
             },
-			{
-					type: "dnd",
-					question: "Drag and drop characteristics to their corresponding MDS switch types:",
-					pairs: [
-						{ prompt: "Director-Class", answer: "enterprise-class performance, scalable and expandable design, high port densities" },
-						{ prompt: "Fabric Switches", answer: "fixed number of ports, ideal for Edge SAN deployments, suitable for small deployments" }
-					]
-				},
-			    {
+            {
+                type: "dnd-category",
+                question: "Drag and drop each characteristic to its corresponding switch category:",
+                categories: [
+                    {
+                        name: "Director-Class",
+                        slots: 3,
+                        validAnswers: [
+                            "enterprise-class performance",
+                            "scalable and expandable design",
+                            "high port densities"
+                        ]
+                    },
+                    {
+                        name: "Fabric Switches",
+                        slots: 3,
+                        validAnswers: [
+                            "fixed number of ports",
+                            "ideal for Edge SAN deployments",
+                            "suitable for small deployments"
+                        ]
+                    }
+                ]
+            },
+            {
                 type: "dnd",
                 question: "Drag and drop hardware failures to the responsible MDS module:",
                 pairs: [
@@ -1436,98 +1454,110 @@
                     { prompt: "Cisco IOS software, backup configuration", answer: "flash memory" }
                 ]
             },
-			{
-				type: "dnd",
-				question: "Drag and drop the steps of the boot sequence process of a Cisco device into order on the right:",
-				pairs: [
-					{ prompt: "Step 1", answer: "Performs power-on self-test (POST)" },
-					{ prompt: "Step 2", answer: "Loads and runs bootstrap code (firmware)" },
-					{ prompt: "Step 3", answer: "Finds and loads the Cisco IOS Software" },
-					{ prompt: "Step 4", answer: "Finds and loads the configuration" },
-					{ prompt: "Step 5", answer: "Runs the configured Cisco IOS Software" }
-				]
-			},
-			{
-				type: "dnd",
-				question: "Drag and drop the functions from the left onto the corresponding Cisco data center technologies on the right:",
-				pairs: [
-					{ prompt: "Unified Fabric", answer: "integrates multiple network layers into a single infrastructure" },
-					{ prompt: "virtual port channels (vPCs)", answer: "provides link aggregation and redundancy between switches" },
-					{ prompt: "Application Centric Infrastructure (ACI)", answer: "enables software-defined networking in data centers" },
-					{ prompt: "Fibre Channel over Ethernet (FCoE)", answer: "combines storage and network traffic on a single network" }
-				]
-			},
-			{
-				type: "dnd",
-				question: "Drag and drop the Cisco collaboration endpoints to their corresponding descriptions:",
-				pairs: [
-					{ prompt: "all-in-one devices for personal workspaces and meeting rooms", answer: "Cisco Room Kit" },
-					{ prompt: "standalone modular video conferencing systems", answer: "Cisco Desk Series" },
-					{ prompt: "multi-angle video capture for immersive experiences", answer: "Quad Camera" },
-					{ prompt: "touch panel for room controls and scheduling", answer: "Room Navigator" },
-					{ prompt: "interactive touchscreen displays supporting video conferencing", answer: "Cisco Board" }
-				]
-			},
-			{
-				type: "dnd",
-				question: "Drag and drop the Cisco NX-OS components from the left onto the corresponding descriptions on the right:",
-				pairs: [
-					{ prompt: "specialized bootloader that Initializes the hardware", answer: "Kickstart Image" },
-					{ prompt: "contains the full NX-OS kernel and operating system", answer: "System Image" },
-					{ prompt: "provides access to the broadest range of commands that affect the device as a whole", answer: "Global configuration command mode" },
-					{ prompt: "allows for displaying device status and configuration information", answer: "EXEC command mode" }
-				]
-			},
-			{
-				type: "dnd",
-				question: "image Drag and drop the names of the field-replaceable units from the left onto the corresponding letters on the image of the Cisco NCS 5500 Series modular router:\n\n<img src='S1.png' alt='Cisco NCS 5500 Series Modular Router' style='max-width: 100%; height: auto; margin-top: 10px; border-radius: 8px;' />",
-				pairs: [
-					{ prompt: "Letter A", answer: "line cards" },
-					{ prompt: "Letter B", answer: "route processor cards" },
-					{ prompt: "Letter C", answer: "transceivers" },
-					{ prompt: "Letter D", answer: "power supplies" }
-				]
-			},
-			{
-				type: "dnd",
-				question: "Drag and drop the TFTP statements from the left onto the corresponding categories on the right:",
-				pairs: [
-					{ prompt: "Advantages of TFTP - Characteristic 1", answer: "simple setup and operation" },
-					{ prompt: "Advantages of TFTP - Characteristic 2", answer: "transferring small files without security concerns" },
-					{ prompt: "Disadvantages of TFTP - Characteristic 1", answer: "not suitable for transferring large files" },
-					{ prompt: "Disadvantages of TFTP - Characteristic 2", answer: "lack of security features and user authentication" }
-				]
-			},
-			{
-				type: "dnd",
-				question: "Drag and drop the configuration tasks for restoring software from the left onto the corresponding commands on the right:",
-				pairs: [
-					{ prompt: "copy usbflash0:backup.cfg running-config", answer: "Restore configuration from USB drive." },
-					{ prompt: "copy running-config startup-config", answer: "Save configuration changes." },
-					{ prompt: "show running-config", answer: "Display current configuration." },
-					{ prompt: "copy tftp: running-config", answer: "Download configuration from TFTP server." }
-				]
-			},
-			{
-				type: "dnd",
-				question: "Drag and drop the Cisco UCS components from the left onto the corresponding functionalities on the right:",
-				pairs: [
-					{ prompt: "primary point of connectivity for all attached devices", answer: "fabric interconnects" },
-					{ prompt: "network adapters that allow network interface virtualization", answer: "virtual interface cards" },
-					{ prompt: "maintain connectivity by extending ports", answer: "fabric extenders" },
-					{ prompt: "installed In a chassis and provide compute power", answer: "servers" }
-				]
-			},
-			{
-				type: "dnd",
-				question: "Drag and drop the tools from the left onto the corresponding primary functions on the right:",
-				pairs: [
-					{ prompt: "copying IOS images and configuration files to/from a PC/laptop or TFTP server", answer: "flash card Reader" },
-					{ prompt: "copying IOS images to and from a router or switch", answer: "USB thumb drive" },
-					{ prompt: "testing router or switch Ethernet port functionality", answer: "RJ-45 Ethernet loopback connector" },
-					{ prompt: "connecting two RJ-45 cables to extend length", answer: "RJ-45 coupler" }
-				]
-			},
+            {
+                type: "dnd",
+                question: "Drag and drop the steps of the boot sequence process of a Cisco device into order on the right:",
+                pairs: [
+                    { prompt: "Step 1", answer: "Performs power-on self-test (POST)" },
+                    { prompt: "Step 2", answer: "Loads and runs bootstrap code (firmware)" },
+                    { prompt: "Step 3", answer: "Finds and loads the Cisco IOS Software" },
+                    { prompt: "Step 4", answer: "Finds and loads the configuration" },
+                    { prompt: "Step 5", answer: "Runs the configured Cisco IOS Software" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop the functions from the left onto the corresponding Cisco data center technologies on the right:",
+                pairs: [
+                    { prompt: "Unified Fabric", answer: "integrates multiple network layers into a single infrastructure" },
+                    { prompt: "virtual port channels (vPCs)", answer: "provides link aggregation and redundancy between switches" },
+                    { prompt: "Application Centric Infrastructure (ACI)", answer: "enables software-defined networking in data centers" },
+                    { prompt: "Fibre Channel over Ethernet (FCoE)", answer: "combines storage and network traffic on a single network" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop the Cisco collaboration endpoints to their corresponding descriptions:",
+                pairs: [
+                    { prompt: "all-in-one devices for personal workspaces and meeting rooms", answer: "Cisco Room Kit" },
+                    { prompt: "standalone modular video conferencing systems", answer: "Cisco Desk Series" },
+                    { prompt: "multi-angle video capture for immersive experiences", answer: "Quad Camera" },
+                    { prompt: "touch panel for room controls and scheduling", answer: "Room Navigator" },
+                    { prompt: "interactive touchscreen displays supporting video conferencing", answer: "Cisco Board" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop the Cisco NX-OS components from the left onto the corresponding descriptions on the right:",
+                pairs: [
+                    { prompt: "specialized bootloader that Initializes the hardware", answer: "Kickstart Image" },
+                    { prompt: "contains the full NX-OS kernel and operating system", answer: "System Image" },
+                    { prompt: "provides access to the broadest range of commands that affect the device as a whole", answer: "Global configuration command mode" },
+                    { prompt: "allows for displaying device status and configuration information", answer: "EXEC command mode" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop the names of the field-replaceable units from the left onto the corresponding letters on the image of the Cisco NCS 5500 Series modular router:\n\n<img src='S1.png' alt='Cisco NCS 5500 Series Modular Router' style='max-width: 100%; height: auto; margin-top: 10px; border-radius: 8px;' />",
+                pairs: [
+                    { prompt: "Letter A", answer: "line cards" },
+                    { prompt: "Letter B", answer: "route processor cards" },
+                    { prompt: "Letter C", answer: "transceivers" },
+                    { prompt: "Letter D", answer: "power supplies" }
+                ]
+            },
+            {
+                type: "dnd-category",
+                question: "Drag and drop the TFTP statements from the left onto the corresponding categories on the right:",
+                categories: [
+                    {
+                        name: "Advantages of TFTP",
+                        slots: 2,
+                        validAnswers: [
+                            "simple setup and operation",
+                            "transferring small files without security concerns"
+                        ]
+                    },
+                    {
+                        name: "Disadvantages of TFTP",
+                        slots: 2,
+                        validAnswers: [
+                            "not suitable for transferring large files",
+                            "lack of security features and user authentication"
+                        ]
+                    }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop the configuration tasks for restoring software from the left onto the corresponding commands on the right:",
+                pairs: [
+                    { prompt: "copy usbflash0:backup.cfg running-config", answer: "Restore configuration from USB drive." },
+                    { prompt: "copy running-config startup-config", answer: "Save configuration changes." },
+                    { prompt: "show running-config", answer: "Display current configuration." },
+                    { prompt: "copy tftp: running-config", answer: "Download configuration from TFTP server." }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop the Cisco UCS components from the left onto the corresponding functionalities on the right:",
+                pairs: [
+                    { prompt: "primary point of connectivity for all attached devices", answer: "fabric interconnects" },
+                    { prompt: "network adapters that allow network interface virtualization", answer: "virtual interface cards" },
+                    { prompt: "maintain connectivity by extending ports", answer: "fabric extenders" },
+                    { prompt: "installed In a chassis and provide compute power", answer: "servers" }
+                ]
+            },
+            {
+                type: "dnd",
+                question: "Drag and drop the tools from the left onto the corresponding primary functions on the right:",
+                pairs: [
+                    { prompt: "copying IOS images and configuration files to/from a PC/laptop or TFTP server", answer: "flash card Reader" },
+                    { prompt: "copying IOS images to and from a router or switch", answer: "USB thumb drive" },
+                    { prompt: "testing router or switch Ethernet port functionality", answer: "RJ-45 Ethernet loopback connector" },
+                    { prompt: "connecting two RJ-45 cables to extend length", answer: "RJ-45 coupler" }
+                ]
+            },
             {
                 type: "dnd",
                 question: "Drag and drop TCP/IP encapsulation steps to corresponding layer:",
@@ -1538,10 +1568,9 @@
                     { prompt: "Adds header to user data", answer: "application layer" }
                 ]
             }
-			
         ];
 
-        // Utility: Strip prefix "A. ", "B. ", etc., from option text
+        // Clean option prefixes if present
         function cleanOptionText(str) {
             return str.replace(/^[A-Z]\.\s*/, '');
         }
@@ -1556,7 +1585,7 @@
             return arr;
         }
 
-        // Active State
+        // State variables
         let quizData = [];
         let currentIdx = 0;
         let score = 0;
@@ -1565,7 +1594,7 @@
         let isAnswered = false;
         let currentShuffledOptions = [];
         let currentCorrectIndices = [];
-        let answeredState = []; // Track answered state per question index
+        let answeredState = []; // Stores null (pending), 'correct', or 'wrong'
 
         // DOM elements
         const quizScreen = document.getElementById('quiz-screen');
@@ -1593,7 +1622,6 @@
         }
 
         function initQuiz() {
-            // Process rawQuizData to strip 'A. ', 'B. ' prefixes cleanly
             quizData = rawQuizData.map(q => {
                 const item = { ...q };
                 if (item.options) {
@@ -1602,12 +1630,11 @@
                 return item;
             });
 
-            // Randomize questions
             quizData = shuffleArray(quizData);
             currentIdx = 0;
             score = 0;
             missedQuestions = [];
-            answeredState = new Array(quizData.length).fill(false);
+            answeredState = new Array(quizData.length).fill(null);
 
             quizScreen.classList.remove('hidden');
             resultsScreen.classList.add('hidden');
@@ -1622,15 +1649,19 @@
                 btn.className = `nav-item ${idx === currentIdx ? 'active' : ''}`;
                 btn.onclick = () => jumpToQuestion(idx);
 
+                const cleanText = q.question.replace(/<[^>]*>/g, '');
                 const label = document.createElement('span');
-                label.textContent = `Q${idx + 1}. ${q.question.substring(0, 22)}...`;
+                label.textContent = `Q${idx + 1}. ${cleanText.substring(0, 18)}...`;
 
                 const status = document.createElement('span');
                 status.className = 'nav-status ';
                 
-                if (answeredState[idx]) {
-                    status.textContent = 'Answered';
-                    status.classList.add('status-answered');
+                if (answeredState[idx] === 'correct') {
+                    status.textContent = 'Correct';
+                    status.classList.add('status-correct');
+                } else if (answeredState[idx] === 'wrong') {
+                    status.textContent = 'Wrong';
+                    status.classList.add('status-wrong');
                 } else if (idx === currentIdx) {
                     status.textContent = 'Current';
                     status.classList.add('status-current');
@@ -1655,7 +1686,7 @@
         }
 
         function loadQuestion() {
-            isAnswered = answeredState[currentIdx];
+            isAnswered = answeredState[currentIdx] !== null;
             selectedIndices = [];
             actionBtn.classList.add('hidden');
 
@@ -1673,7 +1704,7 @@
                 optionsContainer.classList.remove('hidden');
                 dndContainer.classList.add('hidden');
                 renderMC(q, isMulti);
-            } else if (q.type === 'dnd') {
+            } else if (q.type === 'dnd' || q.type === 'dnd-category') {
                 questionTypeBadge.textContent = 'Drag and Drop';
                 optionsContainer.classList.add('hidden');
                 dndContainer.classList.remove('hidden');
@@ -1685,14 +1716,9 @@
 
         function renderMC(q, isMulti) {
             optionsContainer.innerHTML = '';
-
-            // Store original correct option texts
             const correctOptionTexts = q.correctIndices.map(idx => q.options[idx]);
 
-            // Randomize option order
             currentShuffledOptions = shuffleArray(q.options);
-
-            // Re-map correct indices
             currentCorrectIndices = [];
             currentShuffledOptions.forEach((optText, newIdx) => {
                 if (correctOptionTexts.includes(optText)) {
@@ -1700,7 +1726,6 @@
                 }
             });
 
-            // Letter prefixes (fixed sequential index: A, B, C, D...)
             const prefixes = ['A', 'B', 'C', 'D', 'E', 'F'];
 
             currentShuffledOptions.forEach((optText, idx) => {
@@ -1745,7 +1770,6 @@
             if (selectedIndices.length === 0) return;
 
             isAnswered = true;
-            answeredState[currentIdx] = true;
             const buttons = optionsContainer.querySelectorAll('.option-btn');
             buttons.forEach(b => b.disabled = true);
 
@@ -1761,7 +1785,10 @@
                 }
             });
 
-            if (sortedUser === sortedCorrect) {
+            const isCorrect = (sortedUser === sortedCorrect);
+            answeredState[currentIdx] = isCorrect ? 'correct' : 'wrong';
+
+            if (isCorrect) {
                 score++;
             } else {
                 const userText = selectedIndices.map(i => currentShuffledOptions[i]).join(' | ');
@@ -1782,8 +1809,16 @@
             dndSourcePool.innerHTML = '';
             dndTargetsList.innerHTML = '';
 
-            const answers = q.pairs.map(p => p.answer);
-            const shuffledAnswers = shuffleArray(answers);
+            let allAnswers = [];
+            if (q.type === 'dnd-category') {
+                q.categories.forEach(cat => {
+                    allAnswers.push(...cat.validAnswers);
+                });
+            } else {
+                allAnswers = q.pairs.map(p => p.answer);
+            }
+
+            const shuffledAnswers = shuffleArray(allAnswers);
 
             shuffledAnswers.forEach((ansText, index) => {
                 const item = document.createElement('div');
@@ -1796,26 +1831,51 @@
                 dndSourcePool.appendChild(item);
             });
 
-            q.pairs.forEach((pair, idx) => {
-                const row = document.createElement('div');
-                row.className = 'dnd-target-row';
+            if (q.type === 'dnd-category') {
+                q.categories.forEach((cat) => {
+                    const row = document.createElement('div');
+                    row.className = 'dnd-target-row';
 
-                const prompt = document.createElement('div');
-                prompt.className = 'dnd-prompt';
-                prompt.textContent = pair.prompt;
+                    const prompt = document.createElement('div');
+                    prompt.className = 'dnd-prompt';
+                    prompt.textContent = cat.name;
 
-                const dropzone = document.createElement('div');
-                dropzone.className = 'dnd-dropzone';
-                dropzone.dataset.targetIdx = idx;
+                    row.appendChild(prompt);
 
-                dropzone.addEventListener('dragover', handleDragOver);
-                dropzone.addEventListener('dragleave', handleDragLeave);
-                dropzone.addEventListener('drop', handleDrop);
+                    for (let i = 0; i < cat.slots; i++) {
+                        const dropzone = document.createElement('div');
+                        dropzone.className = 'dnd-dropzone';
+                        dropzone.dataset.category = cat.name;
 
-                row.appendChild(prompt);
-                row.appendChild(dropzone);
-                dndTargetsList.appendChild(row);
-            });
+                        dropzone.addEventListener('dragover', handleDragOver);
+                        dropzone.addEventListener('dragleave', handleDragLeave);
+                        dropzone.addEventListener('drop', handleDrop);
+                        row.appendChild(dropzone);
+                    }
+                    dndTargetsList.appendChild(row);
+                });
+            } else {
+                q.pairs.forEach((pair, idx) => {
+                    const row = document.createElement('div');
+                    row.className = 'dnd-target-row';
+
+                    const prompt = document.createElement('div');
+                    prompt.className = 'dnd-prompt';
+                    prompt.textContent = pair.prompt;
+
+                    const dropzone = document.createElement('div');
+                    dropzone.className = 'dnd-dropzone';
+                    dropzone.dataset.targetIdx = idx;
+
+                    dropzone.addEventListener('dragover', handleDragOver);
+                    dropzone.addEventListener('dragleave', handleDragLeave);
+                    dropzone.addEventListener('drop', handleDrop);
+
+                    row.appendChild(prompt);
+                    row.appendChild(dropzone);
+                    dndTargetsList.appendChild(row);
+                });
+            }
 
             dndSourcePool.addEventListener('dragover', handleDragOver);
             dndSourcePool.addEventListener('dragleave', handleDragLeave);
@@ -1878,106 +1938,104 @@
         }
 
         function evaluateDnD() {
-    if (isAnswered) return;
+            if (isAnswered) return;
 
-    const q = quizData[currentIdx];
-    let allCorrect = true;
-    let answeredCount = 0;
+            const q = quizData[currentIdx];
+            let allCorrect = true;
+            let answeredCount = 0;
 
-    if (q.categories) {
-        // --- CATEGORY-BASED DRAG & DROP EVALUATION ---
-        let totalSlots = 0;
+            if (q.type === 'dnd-category') {
+                let totalSlots = 0;
 
-        q.categories.forEach((cat) => {
-            totalSlots += cat.slots || cat.validAnswers.length;
-            const dropzones = dndTargetsList.querySelectorAll(`[data-category="${cat.name}"]`);
+                q.categories.forEach((cat) => {
+                    totalSlots += cat.slots || cat.validAnswers.length;
+                    const dropzones = dndTargetsList.querySelectorAll(`[data-category="${cat.name}"]`);
 
-            dropzones.forEach((dz) => {
-                const child = dz.children[0];
+                    dropzones.forEach((dz) => {
+                        const child = dz.children[0];
 
-                if (child) {
-                    answeredCount++;
-                    const userVal = child.textContent.trim();
+                        if (child) {
+                            answeredCount++;
+                            const userVal = child.textContent.trim();
 
-                    if (cat.validAnswers.includes(userVal)) {
-                        dz.classList.add('correct');
+                            if (cat.validAnswers.includes(userVal)) {
+                                dz.classList.add('correct');
+                            } else {
+                                dz.classList.add('wrong');
+                                allCorrect = false;
+                            }
+                        } else {
+                            allCorrect = false;
+                            dz.classList.add('wrong');
+                        }
+                    });
+                });
+
+                if (!allCorrect || answeredCount !== totalSlots) {
+                    allCorrect = false;
+                    missedQuestions.push({
+                        question: q.question,
+                        userAns: "Incorrect or incomplete matching",
+                        correctAns: q.categories.map(c => `${c.name}: [${c.validAnswers.join(', ')}]`).join(' | ')
+                    });
+                }
+            } else if (q.pairs) {
+                const dropzones = dndTargetsList.querySelectorAll('.dnd-dropzone');
+
+                dropzones.forEach((dz, idx) => {
+                    const targetPair = q.pairs[idx];
+                    const child = dz.children[0];
+
+                    if (child) {
+                        answeredCount++;
+                        const userVal = child.textContent.trim();
+                        if (userVal === targetPair.answer) {
+                            dz.classList.add('correct');
+                        } else {
+                            dz.classList.add('wrong');
+                            allCorrect = false;
+                            const fb = document.createElement('div');
+                            fb.className = 'dnd-feedback';
+                            fb.style.color = '#ef4444';
+                            fb.textContent = `Correct: ${targetPair.answer}`;
+                            dz.parentElement.appendChild(fb);
+                        }
                     } else {
-                        dz.classList.add('wrong');
                         allCorrect = false;
+                        dz.classList.add('wrong');
+                        const fb = document.createElement('div');
+                        fb.className = 'dnd-feedback';
+                        fb.style.color = '#ef4444';
+                        fb.textContent = `Missing! Correct: ${targetPair.answer}`;
+                        dz.parentElement.appendChild(fb);
                     }
-                } else {
+                });
+
+                if (!allCorrect || answeredCount !== q.pairs.length) {
                     allCorrect = false;
-                    dz.classList.add('wrong');
+                    missedQuestions.push({
+                        question: q.question,
+                        userAns: "Incorrect or incomplete matching",
+                        correctAns: q.pairs.map(p => `${p.prompt} → ${p.answer}`).join('; ')
+                    });
                 }
-            });
-        });
-
-        if (!allCorrect || answeredCount !== totalSlots) {
-            allCorrect = false;
-            missedQuestions.push({
-                question: q.question,
-                userAns: "Incorrect or incomplete matching",
-                correctAns: q.categories.map(c => `${c.name}: [${c.validAnswers.join(', ')}]`).join(' | ')
-            });
-        }
-    } else if (q.pairs) {
-        // --- STANDARD PAIR-BASED DRAG & DROP EVALUATION ---
-        const dropzones = dndTargetsList.querySelectorAll('.dnd-dropzone');
-
-        dropzones.forEach((dz, idx) => {
-            const targetPair = q.pairs[idx];
-            const child = dz.children[0];
-
-            if (child) {
-                answeredCount++;
-                const userVal = child.textContent.trim();
-                if (userVal === targetPair.answer) {
-                    dz.classList.add('correct');
-                } else {
-                    dz.classList.add('wrong');
-                    allCorrect = false;
-                    const fb = document.createElement('div');
-                    fb.className = 'dnd-feedback';
-                    fb.style.color = '#ef4444';
-                    fb.textContent = `Correct: ${targetPair.answer}`;
-                    dz.parentElement.appendChild(fb);
-                }
-            } else {
-                allCorrect = false;
-                dz.classList.add('wrong');
-                const fb = document.createElement('div');
-                fb.className = 'dnd-feedback';
-                fb.style.color = '#ef4444';
-                fb.textContent = `Missing! Correct: ${targetPair.answer}`;
-                dz.parentElement.appendChild(fb);
             }
-        });
 
-        if (!allCorrect || answeredCount !== q.pairs.length) {
-            allCorrect = false;
-            missedQuestions.push({
-                question: q.question,
-                userAns: "Incorrect or incomplete matching",
-                correctAns: q.pairs.map(p => `${p.prompt} → ${p.answer}`).join('; ')
-            });
+            isAnswered = true;
+            answeredState[currentIdx] = allCorrect ? 'correct' : 'wrong';
+
+            if (allCorrect) {
+                score++;
+            }
+
+            const dragItems = dndContainer.querySelectorAll('.drag-item');
+            dragItems.forEach(di => di.draggable = false);
+
+            scoreCounter.textContent = `Score: ${score}`;
+            renderSidebar();
+            setupNextButton();
         }
-    }
 
-    if (allCorrect) {
-        score++;
-    }
-
-    isAnswered = true;
-    answeredState[currentIdx] = true;
-
-    const dragItems = dndContainer.querySelectorAll('.drag-item');
-    dragItems.forEach(di => di.draggable = false);
-
-    scoreCounter.textContent = `Score: ${score}`;
-    renderSidebar();
-    setupNextButton();
-		}
-		
         function setupNextButton() {
             if (currentIdx < quizData.length - 1) {
                 actionBtn.textContent = 'Next Question';
